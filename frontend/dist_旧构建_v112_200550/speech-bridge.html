@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>语音识别服务</title>
+  <style>
+    body { font-family: "Segoe UI","Microsoft YaHei",sans-serif; background:#f3f7f6; color:#263238; margin:0; padding:10px; font-size:12px; }
+    .st { font-weight:600; color:#00695c; }
+    .err { color:#c62828; }
+  </style>
+</head>
+<body>
+  <div class="st" id="st">识别服务启动中…</div>
+  <div id="live" style="margin-top:6px;min-height:28px;color:#004d40;"></div>
+  <script>
+    (function () {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const st = document.getElementById('st');
+      const live = document.getElementById('live');
+      const params = new URLSearchParams(location.search);
+      let lang = params.get('lang') || 'zh-CN';
+      let rec = null;
+      let listening = false;
+      let ignoreEnd = false;
+      let wantListen = false;
+      let micOk = false;
+      let lastErr = '';
+      let interim = '';
+
+      function setSt(s, isErr) {
+        st.textContent = s;
+        st.className = isErr ? 'err' : 'st';
+      }
+
+      async function postStatus(extra) {
+        try {
+          await fetch('/api/speech-bridge/status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              listening,
+              micOk,
+              error: lastErr,
+              lang,
+              ts: Date.now(),
+              ...(extra || {}),
+            }),
+          });
+        } catch (_) {}
+      }
+
+      async function fetchControl() {
+        try {
+          const r = await fetch('/api/speech-bridge/control', { cache: 'no-store' });
+          if (!r.ok) return null;
+          return await r.json();
+        } catch { return null; }
+      }
+
+      async function postFinal(text) {
+        try {
+          const r = await fetch('/api/speech-bridge/final', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, lang, ts: Date.now() }),
+          });
+          const j = await r.json().catch(function () { return {}; });
+          if (j && j.ignored) return;
+        } catch (_) {}
+      }
+
+      // [v108] 先拿到麦克风：否则系统无录音指示，Web Speech 也可能静默失败
+      async function ensureMic() {
+        if (micOk) return true;
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: true, noiseSuppression: true },
+          });
+          // 立刻释放——真正采集由 SpeechRecognition 内部完成；这里只为授权+指示灯
+          stream.getTracks().forEach(function (t) { t.stop(); });
+          micOk = true;
+          lastErr = '';
+          await postStatus({ phase: 'mic-ok' });
+          return true;
+        } catch (e) {
+          micOk = false;
+          lastErr = 'mic: ' + (e && e.name ? e.name + ' ' + e.message : String(e));
+          setSt('麦克风不可用：' + lastErr, true);
+          await postStatus({ phase: 'mic-fail' });
+          return false;
+        }
+      }
+
+      function stopRec() {
+        if (!rec || !listening) return;
+        ignoreEnd = true;
+        try { rec.stop(); } catch (_) {}
+      }
+
+      async function startRec() {
+        if (!SR) { setSt('此环境不支持 Web Speech', true); lastErr = 'no-sr'; await postStatus(); return; }
+        if (listening || rec) return;
+        const ok = await ensureMic();
+        if (!ok) return;
+        rec = new SR();
+        rec.lang = lang;
+        rec.continuous = true;
+        rec.interimResults = true;
+        rec.maxAlternatives = 1;
+        ignoreEnd = false;
+        interim = '';
+        rec.onstart = function () {
+          listening = true;
+          lastErr = '';
+          setSt('正在听（' + lang + '）· 麦克风已占用');
+          postStatus({ phase: 'rec-start' });
+        };
+        rec.onresult = function (ev) {
+          if (!wantListen) return;
+          let inter = '', fin = '';
+          for (let i = ev.resultIndex; i < ev.results.length; i++) {
+            const t = ev.results[i][0].transcript;
+            if (ev.results[i].isFinal) fin += t; else inter += t;
+          }
+          if (inter) { interim = inter; live.textContent = interim; }
+          if (fin) {
+            const text = fin.trim();
+            interim = '';
+            live.textContent = text;
+            if (text) postFinal(text);
+          }
+        };
+        rec.onerror = function (ev) {
+          lastErr = 'sr:' + ev.error;
+          listening = false;
+          setSt('识别错误: ' + ev.error, true);
+          postStatus({ phase: 'rec-error' });
+        };
+        rec.onend = function () {
+          listening = false;
+          rec = null;
+          postStatus({ phase: 'rec-end' });
+          if (ignoreEnd) { ignoreEnd = false; return; }
+          setTimeout(function () { if (wantListen) startRec(); }, 180);
+        };
+        try { rec.start(); } catch (e) {
+          rec = null;
+          lastErr = 'start:' + (e && e.message);
+          setSt('启动失败: ' + lastErr, true);
+          postStatus({ phase: 'rec-throw' });
+        }
+      }
+
+      async function tick() {
+        const c = await fetchControl();
+        if (!c || !c.ok) {
+          wantListen = false;
+          setSt('等待软件控制…');
+          stopRec();
+          return;
+        }
+        if (c.lang) lang = c.lang;
+        wantListen = !!(c.enabled && !c.muted);
+        if (wantListen) {
+          if (!listening) await startRec();
+        } else {
+          stopRec();
+          setSt(c.enabled ? '已静音（不采音）' : '识别待命');
+        }
+      }
+
+      if (!SR) setSt('不支持 Web Speech', true);
+      // 启动即申请麦克风，保证系统录音指示灯
+      ensureMic().then(function () { tick(); });
+      setInterval(tick, 400);
+      setInterval(function () { postStatus({ phase: 'heartbeat' }); }, 2000);
+    })();
+  </script>
+</body>
+</html>

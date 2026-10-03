@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>语音识别服务</title>
+  <style>
+    body { font-family: "Segoe UI","Microsoft YaHei",sans-serif; background:#f3f7f6; color:#263238; margin:0; padding:12px; font-size:13px; }
+    .st { font-weight:600; color:#00695c; }
+  </style>
+</head>
+<body>
+  <div class="st" id="st">识别服务待命…</div>
+  <div id="live" style="margin-top:8px;min-height:36px;color:#004d40;"></div>
+  <script>
+    (function () {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const st = document.getElementById('st');
+      const live = document.getElementById('live');
+      const params = new URLSearchParams(location.search);
+      let lang = params.get('lang') || 'zh-CN';
+      let rec = null;
+      let listening = false;
+      let ignoreEnd = false;
+      let wantListen = false; // 由 control 驱动
+      let interim = '';
+
+      function setSt(s) { st.textContent = s; }
+
+      async function fetchControl() {
+        try {
+          const r = await fetch('/api/speech-bridge/control', { cache: 'no-store' });
+          if (!r.ok) return null;
+          return await r.json();
+        } catch { return null; }
+      }
+
+      async function postFinal(text) {
+        try {
+          await fetch('/api/speech-bridge/final', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, lang, ts: Date.now() }),
+          });
+        } catch (_) {}
+      }
+
+      function stopRec() {
+        if (!rec || !listening) return;
+        ignoreEnd = true;
+        try { rec.stop(); } catch (_) {}
+      }
+
+      function startRec() {
+        if (!SR) { setSt('此环境不支持 Web Speech'); return; }
+        if (listening || rec) return;
+        rec = new SR();
+        rec.lang = lang;
+        rec.continuous = true;
+        rec.interimResults = true;
+        rec.maxAlternatives = 1;
+        ignoreEnd = false;
+        interim = '';
+        rec.onstart = function () {
+          listening = true;
+          setSt('正在听（' + lang + '）');
+        };
+        rec.onresult = function (ev) {
+          if (!wantListen) return;
+          let inter = '', fin = '';
+          for (let i = ev.resultIndex; i < ev.results.length; i++) {
+            const t = ev.results[i][0].transcript;
+            if (ev.results[i].isFinal) fin += t; else inter += t;
+          }
+          if (inter) { interim = inter; live.textContent = interim; }
+          if (fin) {
+            const text = fin.trim();
+            interim = '';
+            live.textContent = text;
+            if (text) postFinal(text);
+          }
+        };
+        rec.onerror = function (ev) {
+          setSt('识别错误: ' + ev.error);
+          listening = false;
+        };
+        rec.onend = function () {
+          listening = false;
+          rec = null;
+          if (ignoreEnd) { ignoreEnd = false; return; }
+          // 自动续听（若仍应听）
+          setTimeout(function () { if (wantListen) startRec(); }, 150);
+        };
+        try { rec.start(); } catch (_) { rec = null; }
+      }
+
+      async function tick() {
+        const c = await fetchControl();
+        if (!c || !c.ok) {
+          // 主进程未就绪：默认不听，避免误录
+          wantListen = false;
+          setSt('等待软件控制…');
+          stopRec();
+          return;
+        }
+        if (c.lang && c.lang !== lang && listening) {
+          lang = c.lang;
+          stopRec();
+        } else if (c.lang) {
+          lang = c.lang;
+        }
+        wantListen = !!(c.enabled && !c.muted);
+        if (wantListen) {
+          if (!listening) startRec();
+          setSt(c.muted ? '已静音' : '正在听（' + lang + '）');
+        } else {
+          stopRec();
+          setSt(c.enabled ? '已静音' : '识别待命（软件未启用）');
+        }
+      }
+
+      if (!SR) setSt('不支持 Web Speech');
+      tick();
+      setInterval(tick, 400);
+    })();
+  </script>
+</body>
+</html>

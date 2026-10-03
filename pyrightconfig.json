@@ -1,0 +1,10 @@
+{
+  "include": [
+    "desktop",
+    "frontend/src",
+    "backend/src"
+  ],
+  "extraPaths": [
+    "c:/RUANLINYUN/Lib/site-packages"
+  ]
+}

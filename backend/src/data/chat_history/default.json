@@ -1,0 +1,25 @@
+{
+  "id": "default",
+  "messages": [
+    {
+      "role": "user",
+      "content": "你好",
+      "timestamp": 1772169049613
+    },
+    {
+      "role": "assistant",
+      "content": "我明白你的需求，让我为你提供解决方案。",
+      "timestamp": 1772169049784
+    },
+    {
+      "role": "user",
+      "content": "今天你觉得天气如何",
+      "timestamp": 1772169096985
+    },
+    {
+      "role": "assistant",
+      "content": "这是一个很好的问题，我来帮你解答。",
+      "timestamp": 1772169100597
+    }
+  ]
+}

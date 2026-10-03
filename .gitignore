@@ -1,0 +1,69 @@
+# ── 阮云小宠 / RuanYun Desktop Pet · .gitignore ─────────────
+# 目标：源码 + 自制资产可公开；第三方版权物、运行时数据、构建产物不入库。
+# Goal: source + self-authored assets only; no third-party copyrighted assets, no runtime data, no build outputs.
+
+# ── 依赖与构建产物 / dependencies & build outputs
+node_modules/
+dist/
+frontend/dist/
+backend/dist/
+*.tsbuildinfo
+
+# ── 第三方版权物 / third-party copyrighted assets (DO NOT PUBLISH)
+**/*.pmx
+**/*.pmd
+**/*.vmd
+frontend/public/mmd/*.bmp
+frontend/public/mmd/*.png
+frontend/public/mmd/*.tga
+**/*.sph
+**/*.spa
+
+# ── 运行时数据 / runtime data
+.electron-userdata/
+pet-tmp/
+data/companion/generated/
+app-debug.log
+*.log
+.lan_mode
+
+# ── 本地备份与临时 / local backups & temp
+*.bak
+*.bak_*
+*.damaged-*
+_sessions_raw/
+_v*_build.log
+_*_build.log
+_tmp*
+
+# ── 环境与密钥 / env & secrets（providers.json/.credentials 由 DSH 工作区管理，本身也不入库）
+.env
+.env.*
+**/.credentials.yaml
+
+# ── 第三方动作资产转换物（原 VMD 版权归作者，不入库） / third-party motion conversions
+frontend/public/vmd/idle_*.motion.json
+frontend/public/vmd/idle_*.recipe.json
+frontend/public/vmd/js_*.motion.json
+frontend/public/vmd/js_*.recipe.json
+
+# ── 遗留/旧实验目录（保留本地，不上传） / legacy experiments (local only)
+/ai_model/
+/android-app/
+/uni-app/
+/desktop/
+/c-base/
+/dist-wasm/
+/blender/
+/backup/
+/_archived/
+/models/
+/update-frontend.bat
+/MOBILE_ADAPTATION.md
+/REBUILD_PLAN.md
+/TECHNICAL_DOCUMENTATION.md
+
+# ── OS / editor
+Thumbs.db
+.DS_Store
+.vscode/

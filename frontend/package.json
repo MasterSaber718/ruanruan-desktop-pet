@@ -1,0 +1,73 @@
+{
+  "name": "ruanyun-xiaochong",
+  "version": "1.0.0",
+  "description": "阮云小宠",
+  "private": true,
+  "main": "electron-main.js",
+  "author": "RuanLinYun",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@babylonjs/core": "^9.15.0",
+    "@babylonjs/gui": "^9.15.0",
+    "@babylonjs/loaders": "^9.15.0",
+    "@babylonjs/materials": "^9.15.0",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mui/icons-material": "^5.11.11",
+    "@mui/material": "^5.11.16",
+    "@types/three": "^0.183.1",
+    "@yohawing/three-mmd-loader": "^0.4.0",
+    "axios": "^1.18.1",
+    "babylon-mmd": "^1.2.0",
+    "koffi": "^3.1.5",
+    "mmd-parser": "^1.0.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.9.0",
+    "three": "^0.183.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.59.0",
+    "@typescript-eslint/parser": "^5.59.0",
+    "@vitejs/plugin-react": "^3.1.0",
+    "electron": "^31.7.7",
+    "electron-packager": "^17.1.2",
+    "eslint": "^8.39.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "jsdom": "^29.1.1",
+    "playwright": "^1.55.0",
+    "prettier": "^2.8.8",
+    "typescript": "^5.0.4",
+    "vite": "^4.3.1",
+    "vitest": "^4.1.9"
+  },
+  "scripts": {
+    "dev": "vite --config vite.config.simple.ts",
+    "build": "tsc && vite build --config vite.config.simple.ts",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "vitest run",
+    "preview": "vite preview --config vite.config.simple.ts",
+    "electron:dev": "vite build --config vite.config.simple.ts && electron .",
+    "electron:build": "node scripts/build-electron.js"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "productName": "阮云小宠"
+}

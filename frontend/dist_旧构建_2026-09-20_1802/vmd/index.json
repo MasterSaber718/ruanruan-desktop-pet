@@ -1,0 +1,27 @@
+﻿[
+    {
+        "id":  "idle_刘TWT",
+        "label":  "待机(刘TWT)",
+        "source":  "动作库/待机动作_刘TWT.vmd",
+        "durationSec":  7.667,
+        "asset":  "idle_刘TWT.motion.json",
+        "spatial":  false
+    },
+    {
+        "id":  "js_芝麻凛",
+        "label":  "短姿(芝麻凛JS)",
+        "source":  "动作库/JS_by_芝麻凛.vmd",
+        "durationSec":  1.2,
+        "asset":  "js_芝麻凛.motion.json",
+        "spatial":  false
+    },
+    {
+        "id":  "idle2_眨眼瓶子",
+        "label":  "待机2(眨眼瓶子)",
+        "source":  "动作库/待机动作2",
+        "durationSec":  23.3,
+        "note":  "体积大，仅索引，未拷入public",
+        "asset":  "idle2_眨眼瓶子.motion.json",
+        "spatial":  false
+    }
+]

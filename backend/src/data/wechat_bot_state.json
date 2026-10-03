@@ -1,0 +1,6 @@
+{
+  "status": "plugin_missing",
+  "plugin": "wcferry",
+  "pid": null,
+  "last_error": "插件脚本不存在: C:\\RUANLINYUN\\ruanlinyun-assistant\\backend\\src\\wechat-bot\\wcferry_runner.py"
+}

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>阮云小宠</title>
+  <style>
+    html, body {
+      margin: 0; height: 100%;
+      background: #0c0c12;
+      color: #e8e8e8;
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      user-select: none; overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap {
+      display: flex; flex-direction: column; align-items: center;
+      width: 264px;
+      animation: rl-in 0.35s ease both;
+    }
+    @keyframes rl-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+    .brand { display: flex; align-items: center; gap: 9px; margin-bottom: 34px; }
+    .brand img { width: 30px; height: 30px; border-radius: 8px; display: block; }
+    .brand span { font-size: 13px; letter-spacing: 3px; color: rgba(232,232,232,0.62); }
+
+    /* 进度条：确定态=真实里程碑宽度；等待态=叠加扫描光带（不定态，行业通用做法） */
+    .track {
+      position: relative; width: 100%; height: 4px; border-radius: 2px;
+      background: rgba(255,255,255,0.10); overflow: hidden;
+    }
+    .fill {
+      position: absolute; left: 0; top: 0; height: 100%; width: 0%;
+      border-radius: 2px; background: rgba(255,255,255,0.92);
+      transition: width 0.18s linear;
+    }
+    .sweep {
+      position: absolute; left: 0; top: 0; height: 100%; width: 36%;
+      border-radius: 2px; opacity: 0;
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 100%);
+      transition: opacity 0.25s ease;
+    }
+    .track.waiting .sweep { opacity: 1; animation: rl-sweep 1.15s linear infinite; }
+    @keyframes rl-sweep { from { transform: translateX(-100%); } to { transform: translateX(320%); } }
+
+    .row {
+      display: flex; align-items: baseline; justify-content: space-between;
+      width: 100%; margin-top: 11px; gap: 10px;
+    }
+    .stage {
+      font-size: 12px; letter-spacing: 0.5px; color: rgba(232,232,232,0.68);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      transition: opacity 0.18s ease;
+    }
+    .pct {
+      font-size: 12px; color: rgba(232,232,232,0.42);
+      font-variant-numeric: tabular-nums; flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <img src="app-icon.png" alt="" onerror="this.style.display='none'">
+      <span>阮云小宠</span>
+    </div>
+    <div class="track" id="track" aria-hidden="true">
+      <i class="fill" id="fill"></i>
+      <span class="sweep" id="sweep"></span>
+    </div>
+    <div class="row">
+      <span class="stage" id="stage">正在启动框架…</span>
+      <span class="pct" id="pct">0%</span>
+    </div>
+  </div>
+  <script>
+    /* [v174] 启动进度页 —— 去掉「按秒数自涨」的假进度，改为真实里程碑驱动：
+     * - 主进程每真实完成一件事才下发一次百分比（权重表见 electron-main.js BOOT_MILESTONES）
+     * - 本页只做缓动追赶：显示值平滑逼近真实值，绝不越过真实值，绝不自行爬升
+     * - 连续 900ms 没有新里程碑且未完成 → 叠加扫描光带（不定态），表示「在等，但不知道还有多久」
+     *   这是行业通行做法（nprogress/YouTube/Chrome 的等待态），比虚报百分比诚实
+     * - 100% 只在主进程确认真就绪时下发
+     * 兼容接口：window.__setProgress(pct, msg) / window.__getProgress() */
+    (function () {
+      var target = 0;            // 真实里程碑值（只增不减）
+      var shown = 0;             // 显示值（缓动追赶 target）
+      var lastMsg = '';
+      var lastEventAt = Date.now();
+      var done = false;
+
+      var trackEl = document.getElementById('track');
+      var fillEl = document.getElementById('fill');
+      var stageEl = document.getElementById('stage');
+      var pctEl = document.getElementById('pct');
+      var tipTimer = null;
+
+      window.__setProgress = function (pct, msg) {
+        try {
+          var p = Math.max(0, Math.min(100, Number(pct) || 0));
+          var changed = false;
+          if (p > target) { target = p; changed = true; }
+          if (p >= 100) { target = 100; done = true; changed = true; }
+          if (msg && String(msg) !== lastMsg) {
+            lastMsg = String(msg);
+            changed = true;
+            // 文案淡出淡入，避免字突然换掉
+            if (tipTimer) clearTimeout(tipTimer);
+            stageEl.style.opacity = '0';
+            tipTimer = setTimeout(function () {
+              stageEl.textContent = lastMsg;
+              stageEl.style.opacity = '1';
+            }, 130);
+          }
+          if (changed) lastEventAt = Date.now();
+        } catch (e) { /* noop */ }
+      };
+      window.__getProgress = function () { return shown; };
+
+      function frame() {
+        try {
+          var now = Date.now();
+          var diff = target - shown;
+          if (Math.abs(diff) < 0.12) {
+            shown = target;
+          } else if (diff > 0) {
+            // 匀速缓动：接近时变慢，远时略快，观感连续无跳变
+            shown += diff * (diff > 12 ? 0.10 : 0.055);
+          } else {
+            shown = target;
+          }
+          fillEl.style.width = shown.toFixed(1) + '%';
+          pctEl.textContent = Math.floor(shown) + '%';
+          // 等待态：有真实目标但久无新事件 → 扫描带
+          var idle = !done && target > 0 && (now - lastEventAt) > 900;
+          var has = trackEl.classList.contains('waiting');
+          if (idle && !has) trackEl.classList.add('waiting');
+          else if (!idle && has) trackEl.classList.remove('waiting');
+        } catch (e) { /* noop */ }
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    })();
+  </script>
+</body>
+</html>

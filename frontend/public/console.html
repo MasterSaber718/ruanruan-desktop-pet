@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>壁纸控制台</title>
+<style>
+  /* ══════════ 白色悬浮球控制台（v69）══════════
+     拖拽方案：-webkit-app-region 在本透明无框窗口上实测不可用（v67/v68 两次验证），
+     改为手动拖拽——鼠标事件算位移 → IPC setPosition，不依赖窗口命中测试，保证可拖。
+     形态：
+       1) 悬浮球（默认）：56px 白球，左/右键按住拖动，点中间 >_ 展开
+       2) 面板：白色卡片，标题栏拖动；点面板外任何地方（窗口失焦）自动收回为球
+     窗口层级为普通窗口（不置顶）：打开其他软件时球被自然盖住，只待在桌面上。 */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: transparent;
+    overflow: hidden;
+    font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    user-select: none;
+  }
+  /* ───── 悬浮球形态（默认） ───── */
+  #bubble {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.97);
+    border: 1.5px solid rgba(25, 118, 210, 0.55);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    display: flex; align-items: center; justify-content: center;
+    cursor: move;
+  }
+  #bubble span {
+    color: #1976d2; font-size: 15px; font-weight: bold;
+    font-family: 'Cascadia Mono', Consolas, monospace;
+    cursor: pointer; padding: 10px;  /* 扩大点击热区 */
+  }
+  #bubble span:active { color: #0d47a1; }
+  /* ───── 面板形态 ───── */
+  #panel {
+    display: none;
+    width: 272px;
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    border-radius: 12px;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.22);
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+  }
+  #titlebar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.04);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    cursor: move;
+  }
+  #titlebar .glyph { color: #1976d2; font-weight: bold; font-size: 14px; }
+  #titlebar .title { color: #1a1a1a; font-size: 12.5px; font-weight: 600; letter-spacing: 0.5px; flex: 1; }
+  #titlebar .minibtn {
+    background: transparent; border: none; color: #888;
+    font-family: inherit; font-size: 15px; cursor: pointer; padding: 0 4px;
+  }
+  #titlebar .minibtn:hover { color: #1976d2; }
+  #body { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  #status { color: #777; font-size: 11px; padding: 0 2px; }
+  .row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 8px;
+    background: #ffffff; color: #1a1a1a;
+    font-size: 12.5px; font-family: inherit;
+    cursor: pointer; text-align: left; width: 100%;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .row:hover { border-color: #1976d2; background: #f0f7ff; }
+  .row .prompt { color: #1976d2; font-weight: bold; }
+  .row.primary { border-color: rgba(25, 118, 210, 0.5); }
+  /* [v185] 通话中红卡 */
+  .row.in-call { background: #d64545; color: #fff; }
+  .row.in-call .prompt { color: rgba(255,255,255,0.85); }
+  #hint { color: #999; font-size: 10.5px; line-height: 1.6; padding: 0 2px 2px; }
+  #err { color: #d32f2f; font-size: 11px; padding: 0 2px; display: none; }
+</style>
+</head>
+<body>
+  <div id="bubble"><span id="expandGlyph">&gt;_</span></div>
+  <div id="panel">
+    <div id="titlebar">
+      <span class="glyph">&gt;_</span>
+      <span class="title">壁纸控制台</span>
+      <button class="minibtn" id="collapseBtn" title="收起为悬浮球">&minus;</button>
+    </div>
+    <div id="body">
+      <div id="status">初始化…</div>
+      <!-- [v181] 桌面宠物模式卡片已按需求移除；"退出壁纸模式"自动上移为第一行 -->
+      <button class="row primary" id="exitBtn"><span class="prompt">&gt;</span> 退出壁纸模式 (F11)</button>
+      <!-- [2026-10-01 3D场景] 新增入口：主窗口直接进入 3D 场景编辑模式（主进程链路） -->
+      <button class="row" id="scene3dBtn"><span class="prompt">&gt;</span> 3D 场景</button>
+      <!-- [v181] 隐藏 1/2 分区：不渲染任何可见内容，仅作为"退出壁纸模式"下方对半分格的
+           UI 摆放锚点（用户不可见，方便后续确定与定位）。两个半格各挂一个新入口。 -->
+      <div id="halfSplit">
+        <div style="display: flex; gap: 8px; width: 100%;">
+          <button class="row" id="voiceCallBtn" style="flex: 1 1 0; min-width: 0; justify-content: center;"><span class="prompt">&gt;</span> 语音通话</button>
+          <button class="row" id="settingsBtn" style="flex: 1 1 0; min-width: 0; justify-content: center;"><span class="prompt">&gt;</span> 设置</button>
+        </div>
+      </div>
+      <div id="hint">按住球/标题栏拖动 · 点 &gt;_ 展开 · 点外面收回球</div>
+      <div id="err"></div>
+    </div>
+  </div>
+<script>
+  // [v181] 双语词典：与主程序 i18n 同 key（localStorage ruanlinyun_lang）
+  const LS_LANG_KEY = "ruanlinyun_lang";
+  let LANG = 'zh';
+  try { LANG = localStorage.getItem(LS_LANG_KEY) === 'en' ? 'en' : 'zh'; } catch (e) { /* noop */ }
+  const DICT = {
+    zh: { exit: '\u9000\u51fa\u58c1\u7eb8\u6a21\u5f0f (F11)', call: '\u8bed\u97f3\u901a\u8bdd', incall: '\u6b63\u5728\u901a\u8bdd', set: '\u8bbe\u7f6e', scene3d: '3D \u573a\u666f', hint: '\u6309\u4f4f\u7403/\u6807\u9898\u680f\u62d6\u52a8 \u00b7 \u70b9 >_ \u5c55\u5f00 \u00b7 \u70b9\u5916\u9762\u6536\u56de\u7403', title: '\u58c1\u7eb8\u63a7\u5236\u53f0' },
+    en: { exit: 'Exit Wallpaper (F11)', call: 'Voice Call', incall: 'In Call', set: 'Settings', scene3d: '3D Scene', hint: 'Drag ball/titlebar \u00b7 click >_ to expand \u00b7 click outside to collapse', title: 'Wallpaper Console' },
+  };
+  const applyLang = () => {
+    const d = DICT[LANG] || DICT.zh;
+    const eb = $('exitBtn'); const vb = $('voiceCallBtn'); const sb = $('settingsBtn'); const s3 = $('scene3dBtn');
+    if (eb) eb.innerHTML = '<span class="prompt">&gt;</span> ' + d.exit;
+    if (vb) vb.innerHTML = '<span class="prompt">&gt;</span> ' + (inCall ? (d.incall || 'In Call') : d.call);
+    if (sb) sb.innerHTML = '<span class="prompt">&gt;</span> ' + d.set;
+    if (s3) s3.innerHTML = '<span class="prompt">&gt;</span> ' + d.scene3d;
+    const hint = $('hint'); if (hint) hint.textContent = d.hint;
+    const tt = document.querySelector('#titlebar .title'); if (tt) tt.textContent = d.title;
+  };
+  const $ = (id) => document.getElementById(id);
+  // [v185] 通话状态（与主页实时同步）：红卡 + 文案切换
+  let inCall = false;
+  function renderCallCard() {
+    const vb = $('voiceCallBtn');
+    if (vb) vb.classList.toggle('in-call', inCall);
+    applyLang();
+  }
+  try {
+    const bridge = window.desktopPet || null;
+    if (bridge && bridge.onCallState) bridge.onCallState((v) => { inCall = !!v; renderCallCard(); });
+  } catch (e) { /* noop */ }
+  const wm = window.wallpaperMode;
+  const err = (msg) => { const e = $('err'); e.textContent = '> ' + msg; e.style.display = 'block'; };
+  const BALL = { w: 56, h: 56 }, PANEL = { w: 272, h: 278 }; // [2026-10-01] +42px：新增 3D 场景行后实测校准
+
+  function setSize(w, h) {
+    try { wm && wm.setConsoleSize && wm.setConsoleSize(w, h); } catch (e) { /* 旧主进程无此接口，忽略 */ }
+  }
+  function showBubble() {
+    $('panel').style.display = 'none';
+    $('bubble').style.display = 'flex';
+    setSize(BALL.w, BALL.h);
+  }
+  function showPanel() {
+    $('bubble').style.display = 'none';
+    $('panel').style.display = 'block';
+    setSize(PANEL.w, PANEL.h);
+  }
+
+  // ───── [v69] 手动拖拽：左/右键按住球或标题栏即可拖动 ─────
+  function makeDraggable(el) {
+    el.addEventListener('pointerdown', async (e) => {
+      // 点 >_ 展开 / 点 − 收起 的热区不参与拖拽（子元素自己处理 click）
+      if (e.target.id === 'expandGlyph' || e.target.classList.contains('minibtn')) return;
+      if (!wm || !wm.getConsolePos) return;
+      e.preventDefault();
+      const pos = await wm.getConsolePos();
+      if (!pos) return;
+      const startX = e.screenX, startY = e.screenY;
+      let last = 0;
+      const onMove = (ev) => {
+        const now = performance.now();
+        if (now - last < 16) return;  // ~60fps 节流，避免 IPC 洪水
+        last = now;
+        const nx = pos.x + (ev.screenX - startX);
+        const ny = pos.y + (ev.screenY - startY);
+        wm.setConsolePos(nx, ny);
+      };
+      const onUp = () => {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onUp);
+      };
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+      window.addEventListener('pointercancel', onUp);
+    });
+  }
+  makeDraggable($('bubble'));
+  makeDraggable($('titlebar'));
+
+  (async () => {
+    try {
+      if (!wm) { $('status').textContent = 'preload 未注入（非 Electron 环境）'; return; }
+      const st = await wm.getStatus();
+      $('status').textContent = '> wallpaper active=' + !!st.active + ' · model=' + (st.hasModel ? 'ready' : 'none');
+    } catch (e) { $('status').textContent = '> status: ' + (e.message || e); }
+  })();
+
+  $('expandGlyph').addEventListener('click', showPanel);
+  $('collapseBtn').addEventListener('click', showBubble);
+
+  // [v69] 点面板/球外面的任何地方 → 窗口失焦 → 自动收回为悬浮球
+  if (wm && typeof wm.onConsoleBlur === 'function') {
+    wm.onConsoleBlur(() => {
+      if ($('panel').style.display !== 'none') showBubble();
+    });
+  }
+
+  // [v181] 桌面宠物模式入口已移除（原 petBtn 监听删除）。
+  //  新入口：语音通话 / 设置 —— 先退出壁纸模式（主窗口还原），再让主窗口跳到对应页面。
+  //  页面导航经 location 换 hash 不可靠（主窗口是独立 BrowserWindow），走主进程跳转：
+  //  复用 desktopPet.showWindow() 还原主窗口后，用 sessionStorage 无法跨窗口，
+  //  因此由主进程 exitWallpaperMode 完成还原，这里再通过 wm.navigateMain 跳页面（preload v181 新增）。
+  // [v185] 语音通话卡片：不再跳转主页。点击 → 请求切换通话（主页执行），状态经主进程回流更新卡片
+  $('voiceCallBtn').addEventListener('click', async () => {
+    try {
+      const bridge = window.desktopPet || null;
+      if (bridge && bridge.requestCallToggle) await bridge.requestCallToggle();
+      else err('通话桥未就绪（需重启应用加载新 preload）');
+    } catch (e) { err(e.message || String(e)); }
+  });
+  $('settingsBtn').addEventListener('click', async () => {
+    try {
+      if (wm && wm.navigateMain) { const r = await wm.navigateMain('/settings'); if (r && r.success === false) { err(r.error || '跳转失败'); return; } }
+      else if (wm) { await wm.exit(); err('旧主进程无导航接口，已仅退出壁纸模式'); }
+    } catch (e) { err(e.message || String(e)); }
+  });
+  // [2026-10-01 3D场景] 新入口：主进程退出壁纸 → 主窗口跳 /new-page?scene3d=1（直达 3D 编辑模式）
+  $('scene3dBtn').addEventListener('click', async () => {
+    try {
+      const s3 = window.scene3d;
+      if (s3 && s3.enter) {
+        const r = await s3.enter();
+        if (r && r.success === false) err(r.error || '跳转失败');
+      } else if (wm && wm.navigateMain) {
+        await wm.navigateMain('/new-page');
+        err('旧 preload：已跳主页，请手动点「3D场景」开关');
+      } else {
+        err('桥未就绪（需重启应用加载新 preload）');
+      }
+    } catch (e) { err(e.message || String(e)); }
+  });
+  $('exitBtn').addEventListener('click', async () => {
+    try { const r = await wm.exit(); if (r && r.success === false) err(r.error || '退出失败'); }
+    catch (e) { err(e.message || String(e)); }
+  });
+
+  // [v181] 初始应用语言 + 主程序切语言时跟随（storage 事件跨页通知）
+  applyLang();
+  window.addEventListener('storage', (e) => {
+    if (e.key === LS_LANG_KEY) {
+      try { LANG = localStorage.getItem(LS_LANG_KEY) === 'en' ? 'en' : 'zh'; } catch (er) { /* noop */ }
+      applyLang();
+    }
+  });
+
+  // 启动即悬浮球形态（窗口初始尺寸与球一致，防止透明区域挡桌面点击）
+  showBubble();
+</script>
+</body>
+</html>

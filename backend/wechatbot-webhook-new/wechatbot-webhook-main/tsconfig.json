@@ -1,0 +1,21 @@
+{
+  "include": ["**/*", "lib/qrcode.min.js"],
+  "exclude": ["packages/**/*"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["src/*"]
+    },
+    "rootDir": "./",
+    "target": "ESNext",                                 
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "checkJs": true,                                                  
+    "forceConsistentCasingInFileNames": true,            
+    "strict": true,                                      
+    "skipLibCheck": true,
+    "noEmit": true,
+    "resolveJsonModule": true,                     
+  }
+}

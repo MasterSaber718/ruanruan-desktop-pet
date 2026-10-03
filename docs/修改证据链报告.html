@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>阮琳云智能助手 - 修改证据链报告</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif; background: #0f1117; color: #e0e0e0; line-height: 1.7; padding: 24px; }
+  .container { max-width: 960px; margin: 0 auto; }
+  h1 { color: #4fc3f7; margin-bottom: 8px; font-size: 24px; }
+  .meta { color: #888; font-size: 13px; margin-bottom: 24px; }
+  .panel { background: #1a1d27; border-radius: 10px; padding: 20px; margin-bottom: 16px; border: 1px solid #2a2d37; }
+  .panel-title { color: #4fc3f7; font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+  th { text-align: left; padding: 8px 12px; background: #252830; color: #aaa; font-size: 12px; font-weight: 600; border-bottom: 1px solid #333; }
+  td { padding: 8px 12px; border-bottom: 1px solid #252830; font-size: 13px; }
+  .pass { color: #4caf50; font-weight: 600; }
+  .fail { color: #f44336; font-weight: 600; }
+  .warn { color: #ff9800; font-weight: 600; }
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before { content: ''; position: absolute; left: 12px; top: 0; bottom: 0; width: 2px; background: #333; }
+  .step { position: relative; margin-bottom: 20px; }
+  .step::before { content: attr(data-num); position: absolute; left: -32px; top: 0; width: 26px; height: 26px; border-radius: 50%; background: #4fc3f7; color: #0f1117; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .step-title { color: #e0e0e0; font-weight: 600; margin-bottom: 4px; }
+  .step-text { color: #aaa; font-size: 13px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .badge-pass { background: #1b5e20; color: #4caf50; }
+  .badge-warn { background: #4e342e; color: #ff9800; }
+  .code { background: #0d1117; border-radius: 6px; padding: 12px; margin: 8px 0; font-family: 'Cascadia Code', 'Consolas', monospace; font-size: 12px; color: #7ec699; overflow-x: auto; }
+  .footer { text-align: center; color: #555; font-size: 12px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>阮琳云智能助手 — 修改证据链报告</h1>
+  <div class="meta">生成时间：2026-08-08 00:50 (Asia/Shanghai) | 备份基线：ruanlinyun-assistant-backup-20260808</div>
+
+  <div class="panel">
+    <div class="panel-title">一、修改总览</div>
+    <table>
+      <tr><th>问题</th><th>修改文件</th><th>修改内容</th><th>验证状态</th></tr>
+      <tr><td>右键拖拽闪烁+放大</td><td>BabylonModelViewer.tsx</td><td>移除200ms定时器，改为立即拖拽；pointermove用CSS transform偏移canvas替代高频moveWindow IPC；pointerup一次性moveWindow总位移</td><td><span class="pass">✓ 10项全部通过</span></td></tr>
+      <tr><td>右上角三按钮不显示</td><td>WindowControls.tsx</td><td>z-index从9999提升到99999；添加WebkitAppRegion:no-drag确保Electron frame:false窗口中按钮可点击；添加pointerEvents:auto</td><td><span class="pass">✓ 链路完整</span></td></tr>
+      <tr><td>32/64位适配</td><td>build-electron.js</td><td>添加BUILD_ARCH环境变量支持，可通过BUILD_ARCH=ia32构建32位版本</td><td><span class="pass">✓ 已验证</span></td></tr>
+    </table>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">二、右键拖拽修复 — 原理对比</div>
+    <div class="timeline">
+      <div class="step" data-num="1">
+        <div class="step-title">旧方案（闪烁根因）</div>
+        <div class="step-text">
+          pointerdown → 设200ms定时器 → 定时器到期才 isDraggingRef=true → 期间pointermove走第二分支检测移动>5px → 每次pointermove都调 desktopPet.moveWindow(deltaX, deltaY) → IPC到主进程 petWindow.setPosition() → 高频原生窗口移动 → DWM重绘冲突 → 闪烁<br>
+          wheel在间隙期可能触发zoomBy → resizeWindow(setBounds)与moveWindow(setPosition)叠加 → 视觉放大效果
+        </div>
+      </div>
+      <div class="step" data-num="2">
+        <div class="step-title">新方案（Live2D原理）</div>
+        <div class="step-text">
+          pointerdown → 立即 isDraggingRef=true + detachControl + setPointerCapture（无定时器间隙）<br>
+          pointermove → 累计dragTotalDeltaX/Y + canvas.style.transform = translate(x,y)（GPU合成层，零IPC，零DWM重绘）<br>
+          pointerup → 一次性 desktopPet.moveWindow(totalDeltaX, totalDeltaY) + canvas.style.transform = ''（窗口移动到目标位置，canvas回到正中）<br>
+          wheel → isDraggingRef=true时立即return（无间隙期）
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">三、10项验证结果</div>
+    <table>
+      <tr><th>#</th><th>检查项</th><th>结果</th></tr>
+      <tr><td>1</td><td>rightClickTimerRef 完全移除</td><td><span class="pass">✓ True</span></td></tr>
+      <tr><td>2</td><td>moveWindow 从 pointermove 中移除</td><td><span class="pass">✓ True</span></td></tr>
+      <tr><td>3</td><td>moveWindow 在 pointerup 中存在（一次性调用）</td><td><span class="pass">✓ True</span></td></tr>
+      <tr><td>4</td><td>canvas.style.transform 用于拖拽视觉偏移</td><td><span class="pass">✓ True</span></td></tr>
+      <tr><td>5</td><td>isDraggingRef 在 handleWheel 中检查</td><td><span class="pass">✓ True</span></td></tr>
+      <tr><td>6</td><td>WindowControls z-index 提升到 99999</td><td><span class="pass">✓ True</span></td></tr>
+      <tr><td>7</td><td>WindowControls 添加 WebkitAppRegion: no-drag</td><td><span class="pass">✓ True</span></td></tr>
+      <tr><td>8</td><td>build-electron.js 支持 BUILD_ARCH 环境变量</td><td><span class="pass">✓ True</span></td></tr>
+      <tr><td>9</td><td>preload.js windowControls 接口完整（minimize/close/toggleMaximize）</td><td><span class="pass">✓ True</span></td></tr>
+      <tr><td>10</td><td>electron-main.js IPC handlers 完整</td><td><span class="pass">✓ True</span></td></tr>
+    </table>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">四、逻辑链路完整性检查</div>
+    <table>
+      <tr><th>链路</th><th>状态</th><th>说明</th></tr>
+      <tr><td>桌宠拖拽 → pointerdown → pointermove → pointerup</td><td><span class="badge badge-pass">完整</span></td><td>立即拖拽+CSS偏移+释放时一次性移动</td></tr>
+      <tr><td>桌宠缩放 → wheel → zoomBy → resizeWindow IPC</td><td><span class="badge badge-pass">完整</span></td><td>拖拽中完全禁用，非拖拽时正常工作</td></tr>
+      <tr><td>桌宠右键菜单 → pointerup(未移动) → showContextMenu</td><td><span class="badge badge-pass">完整</span></td><td>通过rightClickMovedRef区分单击/拖拽</td></tr>
+      <tr><td>三按钮 → WindowControls → preload → IPC → electron-main</td><td><span class="badge badge-pass">完整</span></td><td>z-index提升+no-drag确保可见可点击</td></tr>
+      <tr><td>普通模式（非桌宠）相机交互</td><td><span class="badge badge-pass">不受影响</span></td><td>所有桌宠特有逻辑都有desktopPetMode条件保护</td></tr>
+      <tr><td>模型加载 → 文件中转 → fetch → BabylonModelViewer</td><td><span class="badge badge-pass">完整</span></td><td>未修改此链路</td></tr>
+      <tr><td>事件清理 → useEffect return → removeEventListener</td><td><span class="badge badge-pass">完整</span></td><td>wheel/pointerdown/pointermove/pointerup/contextmenu 全部清理</td></tr>
+    </table>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">五、可复原性</div>
+    <table>
+      <tr><th>项目</th><th>路径</th><th>说明</th></tr>
+      <tr><td>源码备份</td><td>C:\RUANLINYUN\ruanlinyun-assistant-backup-20260808</td><td>修改前的完整源码备份</td></tr>
+      <tr><td>修改文件1</td><td>frontend/src/components/BabylonModelViewer.tsx</td><td>右键拖拽逻辑重构（v14）</td></tr>
+      <tr><td>修改文件2</td><td>frontend/src/components/WindowControls.tsx</td><td>z-index+no-drag增强</td></tr>
+      <tr><td>修改文件3</td><td>frontend/scripts/build-electron.js</td><td>32/64位双架构支持</td></tr>
+    </table>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">六、Android 版本进度</div>
+    <table>
+      <tr><th>项目</th><th>状态</th></tr>
+      <tr><td>技术方案</td><td>Capacitor WebView（复用前端代码，最小体积）</td></tr>
+      <tr><td>子任务</td><td><span class="badge badge-warn">运行中</span> Android版本构建 subagent</td></tr>
+      <tr><td>目标</td><td>手机端UI适配 + APK构建 + 省电优化</td></tr>
+    </table>
+  </div>
+
+  <div class="footer">阮琳云智能助手 · 修改证据链报告 · 2026-08-08</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,428 @@
+[
+  {
+    "id": "greet",
+    "label": "打招呼",
+    "verbs": [
+      "你好",
+      "嗨",
+      "打招呼",
+      "早上好",
+      "哈喽"
+    ],
+    "steps": [
+      {
+        "action": "wave",
+        "params": {
+          "side": "right",
+          "amplitude": 0.8,
+          "duration": 3
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "nod",
+        "params": {
+          "count": 1
+        },
+        "wait": "complete"
+      }
+    ],
+    "author": "preset",
+    "createdAt": 0,
+    "verified": false
+  },
+  {
+    "id": "shyGreet",
+    "label": "害羞问好",
+    "verbs": [
+      "害羞",
+      "被夸",
+      "不好意思",
+      "别夸我"
+    ],
+    "steps": [
+      {
+        "action": "block",
+        "params": {},
+        "wait": "complete"
+      },
+      {
+        "action": "wave",
+        "params": {
+          "side": "right",
+          "amplitude": 0.5,
+          "duration": 2.5
+        },
+        "wait": "complete"
+      }
+    ],
+    "author": "preset",
+    "createdAt": 0,
+    "verified": false
+  },
+  {
+    "id": "celebrate",
+    "label": "庆祝",
+    "verbs": [
+      "庆祝",
+      "太好了",
+      "成功啦",
+      "赢了"
+    ],
+    "steps": [
+      {
+        "action": "jump",
+        "params": {
+          "power": "strong"
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "cheer",
+        "params": {
+          "amplitude": 0.9,
+          "duration": 2.5
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "clap",
+        "params": {
+          "count": 4,
+          "speed": "quick"
+        },
+        "wait": "complete"
+      }
+    ],
+    "author": "preset",
+    "createdAt": 0,
+    "verified": false
+  },
+  {
+    "id": "comfort",
+    "label": "安慰",
+    "verbs": [
+      "安慰",
+      "抱抱",
+      "别难过",
+      "摸摸"
+    ],
+    "steps": [
+      {
+        "action": "nod",
+        "params": {
+          "count": 1,
+          "timing": "smooth"
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "approach",
+        "params": {
+          "steps": 2,
+          "speed": "slow"
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "offerHand",
+        "params": {
+          "side": "right",
+          "hold": 2
+        },
+        "wait": "complete"
+      }
+    ],
+    "author": "preset",
+    "createdAt": 0,
+    "verified": false
+  },
+  {
+    "id": "deny",
+    "label": "拒绝",
+    "verbs": [
+      "不要",
+      "拒绝",
+      "不行",
+      "不同意"
+    ],
+    "steps": [
+      {
+        "action": "shake",
+        "params": {
+          "count": 2
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "refuse",
+        "params": {
+          "side": "right",
+          "count": 2
+        },
+        "wait": "complete"
+      }
+    ],
+    "author": "preset",
+    "createdAt": 0,
+    "verified": false
+  },
+  {
+    "id": "think",
+    "label": "思考",
+    "verbs": [
+      "想想",
+      "思考",
+      "让我想想",
+      "嗯…"
+    ],
+    "steps": [
+      {
+        "action": "lookUp",
+        "params": {
+          "angle": 20
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "tiltHead",
+        "params": {
+          "side": "right",
+          "angle": 18
+        },
+        "wait": "complete"
+      }
+    ],
+    "author": "preset",
+    "createdAt": 0,
+    "verified": false
+  },
+  {
+    "id": "sleepy",
+    "label": "困了",
+    "verbs": [
+      "困",
+      "累",
+      "睡觉",
+      "好困"
+    ],
+    "steps": [
+      {
+        "action": "lookDown",
+        "params": {
+          "angle": 22
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "stretch",
+        "params": {
+          "style": "up"
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "nod",
+        "params": {
+          "count": 3,
+          "timing": "smooth"
+        },
+        "wait": "complete"
+      }
+    ],
+    "author": "preset",
+    "createdAt": 0,
+    "verified": false
+  },
+  {
+    "id": "excited",
+    "label": "兴奋",
+    "verbs": [
+      "兴奋",
+      "开心",
+      "激动",
+      "好耶"
+    ],
+    "steps": [
+      {
+        "action": "bounce",
+        "params": {
+          "freq": 2,
+          "amplitude": 0.6,
+          "duration": 2
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "clap",
+        "params": {
+          "count": 3,
+          "speed": "quick"
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "spin",
+        "params": {
+          "turns": 1,
+          "dir": "left"
+        },
+        "wait": "complete"
+      }
+    ],
+    "author": "preset",
+    "createdAt": 0,
+    "verified": false
+  },
+  {
+    "id": "invite",
+    "label": "邀约",
+    "verbs": [
+      "过来",
+      "跟我走",
+      "邀请",
+      "一起去"
+    ],
+    "steps": [
+      {
+        "action": "comeHere",
+        "params": {
+          "side": "right",
+          "count": 2
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "offerHand",
+        "params": {
+          "side": "right",
+          "hold": 1.5
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "bounce",
+        "params": {
+          "freq": 1.5,
+          "amplitude": 0.5,
+          "duration": 2
+        },
+        "wait": "complete"
+      }
+    ],
+    "author": "preset",
+    "createdAt": 0,
+    "verified": false
+  },
+  {
+    "id": "tantrum",
+    "label": "生气跺脚",
+    "verbs": [
+      "生气",
+      "跺脚",
+      "哼",
+      "不理你"
+    ],
+    "steps": [
+      {
+        "action": "stomp",
+        "params": {
+          "side": "left",
+          "count": 2,
+          "power": 0.7
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "pout",
+        "params": {},
+        "wait": "complete"
+      },
+      {
+        "action": "turnBody",
+        "params": {
+          "angle": 45
+        },
+        "wait": "complete"
+      }
+    ],
+    "author": "preset",
+    "createdAt": 0,
+    "verified": false
+  },
+  {
+    "id": "shyCome",
+    "label": "害羞招手",
+    "verbs": [
+      "招手让我过来",
+      "害羞地招手",
+      "过来呀",
+      "到我这边来"
+    ],
+    "steps": [
+      {
+        "action": "comeHere",
+        "params": {
+          "side": "right",
+          "count": 2
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "block",
+        "params": {},
+        "wait": "complete"
+      },
+      {
+        "action": "tiltHead",
+        "params": {
+          "side": "right",
+          "angle": 20
+        },
+        "wait": "complete"
+      }
+    ],
+    "author": "ai-workshop",
+    "createdAt": 1789451092131,
+    "verified": false
+  },
+  {
+    "id": "cheerSpin",
+    "label": "庆祝转圈",
+    "verbs": [
+      "太开心了",
+      "庆祝一下",
+      "庆祝",
+      "好消息"
+    ],
+    "steps": [
+      {
+        "action": "cheer",
+        "params": {
+          "amplitude": 0.9,
+          "duration": 2
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "jump",
+        "params": {
+          "height": 0.4,
+          "power": "normal"
+        },
+        "wait": "complete"
+      },
+      {
+        "action": "spin",
+        "params": {
+          "turns": 1,
+          "dir": "left"
+        },
+        "wait": "complete"
+      }
+    ],
+    "author": "ai-workshop",
+    "createdAt": 1789451092131,
+    "verified": false
+  }
+]

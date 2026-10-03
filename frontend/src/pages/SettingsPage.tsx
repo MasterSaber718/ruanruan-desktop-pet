@@ -1,0 +1,853 @@
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Typography, FormControlLabel, Switch, TextField, Paper, Divider,
+  Accordion, AccordionSummary, AccordionDetails, IconButton, Box, Alert,
+  Button, Select, MenuItem, InputLabel, FormControl, CircularProgress, Chip,
+  Dialog, DialogTitle, DialogContent, DialogActions,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import CloseIcon from '@mui/icons-material/Close';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import QrCodeIcon from '@mui/icons-material/QrCode2';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import apiConfigService, { ApiProviderConfig, BUILTIN_PROVIDERS } from '../services/ApiConfigService';
+import { llmApiService } from '../services/LLMApiService';
+import wechatBotService, { BotState } from '../services/WechatBotService';
+import { getLang, setLang, t as tt, type Lang } from '../i18n';
+
+// 设置页：AI模型 / 通用 / 机器人 / 关于（局域网访问入口已删除）
+// [v139] 设备优化 UI 卡片已删，优化改 App 启动后台自动执行；布局改为左右双栏
+
+interface SettingsPageProps {
+  isDarkMode: boolean;
+  setIsDarkMode: (value: boolean) => void;
+}
+
+function SettingsPage({ isDarkMode, setIsDarkMode }: SettingsPageProps) {
+  const navigate = useNavigate();
+  const [providers, setProviders] = useState<ApiProviderConfig[]>([]);
+  const [selectedProviderId, setSelectedProviderId] = useState('deepseek');
+  // [v193] 输入框内直接显示脱敏 key（sk-f7*****49）；聚焦才进入输入模式，真实 key 不进框
+  const [apiKeyInput, setApiKeyInput] = useState('');
+  const [keyEditing, setKeyEditing] = useState(false);
+  // [v194] 交互修复：点框不再清空原值；只有框内容与进入编辑前的快照不同才提交 apiKey。
+  //  （v193 的「点框清空+空值保存=清除」会把用户只点一下的已存 key 直接抹掉）
+  const keyTouchedRef = useRef(false);
+  const keyOriginalRef = useRef<string | null>(null);
+  const [currentKeyMasked, setCurrentKeyMasked] = useState(''); // [v191] 已存 key 脱敏展示（前2位 + ·×N + 后2位，总长=原key）
+    const [baseUrl, setBaseUrl] = useState('');
+  const [model, setModel] = useState('');
+  const [enabled, setEnabled] = useState(false);
+  const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const [testing, setTesting] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  // 微信机器人（wechatbot-webhook 模式）
+  const [wechatState, setWechatState] = useState<BotState | null>(null);
+  const [wechatEnabled, setWechatEnabled] = useState(false);
+  const [wechatBusy, setWechatBusy] = useState(false);
+  const [wechatError, setWechatError] = useState<string | null>(null);
+  const [wechatSuccess, setWechatSuccess] = useState<string | null>(null);
+  const [loginUrl, setLoginUrl] = useState<string | null>(null);
+  const [listenInput, setListenInput] = useState('');
+  const [listenList, setListenList] = useState<string[]>([]);
+  // [v173] 开发者功能开关（提到页面级：控制「机器人」卡片是否显示 + 关于页tt('set.devMode')面板）
+  const [devMode, setDevMode] = useState(() => {
+    try { return localStorage.getItem('ruanlinyun_dev_mode') === 'true'; } catch { return false; }
+  });
+  const handleDevModeChange = (on: boolean) => {
+    setDevMode(on);
+    try { localStorage.setItem('ruanlinyun_dev_mode', String(on)); } catch { /* noop */ }
+  };
+
+  // ===== [v178] DSH 常驻服务开关（通用设置）=====
+// [v181] 语言切换状态：跟随 i18n.ts 的 localStorage + 全局事件
+const [lang, setLangSt] = useState<Lang>(getLang());
+  // [v185 人物设定] 开发者自定义 AI 人设；保存进 localStorage 并立即生效（对话时随请求发送）
+  const [personaText, setPersonaText] = useState<string>(() => { try { return localStorage.getItem('rl_persona_text') || ''; } catch { return ''; } });
+  const [personaSaved, setPersonaSaved] = useState(false);
+useEffect(() => {
+  const h = () => setLangSt(getLang());
+  window.addEventListener('rl-lang-changed', h);
+  return () => window.removeEventListener('rl-lang-changed', h);
+}, []);
+  // [v181b] DSH 反向语言桥：DSH 页内切语言 → 软件全 UI 跟随（fromDsh 不再回写防循环）
+  useEffect(() => {
+    const dl = (window as any).dshLocale;
+    if (dl && dl.onChanged) {
+      const off = dl.onChanged((lang: Lang) => { setLang(lang, { fromDsh: true }); setLangSt(lang); });
+      return () => { try { off(); } catch { /* noop */ } };
+    }
+  }, []);
+  //   语义 = 随软件启动预热（开=启动即后台预热 DSH；关=进 DSH 页面按需拉起）。
+  //   退出软件时 DSH 无条件一起关（v178 定案），本开关不再影响退出行为。
+  //   默认开启；关闭必须连过两级确认（用户要求：①介绍作用+后果 ②卖萌二次确认 ③成功提示）。
+  //   弹窗是"替换式"的，不是叠叠乐 —— 同一个 Dialog 换内容，stage 1→2→3。
+  const [dshResident, setDshResident] = useState(true);
+  const [residentStage, setResidentStage] = useState<0 | 1 | 2 | 3>(0);
+  const residentToastTimer = useRef<number | null>(null);
+
+  const closeResidentFlow = () => {
+    if (residentToastTimer.current) { window.clearTimeout(residentToastTimer.current); residentToastTimer.current = null; }
+    setResidentStage(0);
+  };
+  useEffect(() => () => {
+    if (residentToastTimer.current) window.clearTimeout(residentToastTimer.current);
+  }, []);
+
+  /** 真正写偏好（主进程负责落盘；v178 起「常驻」=是否随软件启动预热） */
+  const applyResident = async (on: boolean) => {
+    try {
+      const dsh = (window as any).dshHarness;
+      if (dsh?.residentSet) await dsh.residentSet(on);
+    } catch (e) { console.warn('[Settings] residentSet fail', e); }
+    setDshResident(on);
+  };
+
+  const handleResidentToggle = (on: boolean) => {
+    if (on) { void applyResident(true); return; }     // 开：直接开，不废话
+    setResidentStage(1);                              // 关：走三级确认，先把开关状态交回用户
+  };
+
+  const confirmResidentOff = async () => {
+    await applyResident(false);
+    setResidentStage(3);
+    // 用户定：成功提示显示 0.5 秒后自动关闭（没有别的按钮，只有右上角 X）
+    residentToastTimer.current = window.setTimeout(() => { setResidentStage(0); residentToastTimer.current = null; }, 500);
+  };
+
+  useEffect(() => {
+    const init = async () => {
+      await apiConfigService.waitReady();
+      const all = apiConfigService.getAll();
+      setProviders(all);
+      // [v153] 以 DSH/providers.json 为生效源；软件列表全量同步（fullSync）
+      try {
+        const dsh = (window as any).dshHarness;
+        if (dsh?.providersSync) {
+          const sync = await dsh.providersSync({
+            // [v176] 打开设置页只做 upsert，不带删除语义 —— 避免软件侧列表不全时把 DSH 的 provider 批量打墓碑。
+            //   删除只由用户显式点删除触发。
+            fullSync: false,
+            // [v176] 必须带上 activeId：之前漏了这个字段，DSH 的 active 一直停在历史值（空的 custom），
+            //   于是「软件里启用了 A，DSH 却按空的跑」→ 用户"填了用不了"。
+            activeId: apiConfigService.getActive()?.id || all.find((c) => c.enabled)?.id || undefined,
+            providers: all.map((c) => ({
+              id: c.id,
+              name: c.name,
+              baseUrl: c.baseUrl,
+              model: c.model,
+              apiKey: c.apiKey || '',
+              enabled: c.enabled,
+            })),
+          });
+          if (sync?.ok && sync.activeId) {
+            try { localStorage.setItem('ruanlinyun_settings_provider', sync.activeId); } catch { /* noop */ }
+          }
+        }
+      } catch (e) { console.warn('[Settings] providers sync fail', e); }
+      // 优先 DSH active，其次上次选中
+      try {
+        let lastId = localStorage.getItem('ruanlinyun_settings_provider');
+        const dsh = (window as any).dshHarness;
+        if (dsh?.providersGet) {
+          const st = await dsh.providersGet();
+          if (st?.ok && st.activeId) lastId = st.activeId;
+        }
+        const pick = all.find((c) => c.id === lastId) || all.find((c) => c.enabled) || all[0];
+        if (pick) loadProvider(pick.id, all);
+      } catch {
+        if (all.length > 0) loadProvider(all[0].id, all);
+      }
+      // [v175] 读取「DSH 常驻服务」开关状态（偏好存在主进程，默认开）
+      try {
+        const harness = (window as any).dshHarness;
+        if (harness?.residentGet) {
+          const rs = await harness.residentGet();
+          if (rs?.ok) setDshResident(rs.enabled !== false);
+        }
+      } catch { /* ignore */ }
+      // 加载微信机器人状态
+      await refreshWechatState();
+      // 加载监听列表
+      try {
+        const { ok, listen } = await wechatBotService.listen('list');
+        if (ok && listen) setListenList(listen);
+      } catch { /* ignore */ }
+    };
+    init();
+    // 每5秒轮询微信机器人状态（webhook 模式无需高频刷新）
+    const wechatTimer = setInterval(refreshWechatState, 5000);
+    return () => clearInterval(wechatTimer);
+  }, []);
+
+  /** 刷新微信机器人状态 */
+  const refreshWechatState = async () => {
+    try {
+      const { ok, state } = await wechatBotService.getState();
+      if (ok && state) {
+        setWechatState(state);
+        // 仅 running 视为已启用
+        setWechatEnabled(state.status === 'running');
+        // 同步监听列表
+        if (state.listen) setListenList(state.listen);
+      }
+    } catch {
+      // 后端未启动时忽略
+    }
+  };
+
+  /** 切换微信机器人开关 */
+  const handleWechatToggle = async (val: boolean) => {
+    setWechatBusy(true);
+    setWechatError(null);
+    try {
+      if (val) {
+        // 开启时检查容器状态：未登录则获取 login_url
+        const { ok, state, error, login_url: url } = await wechatBotService.start();
+        if (ok) {
+          if (state) setWechatState(state);
+          if (url) {
+            setLoginUrl(url);
+            setWechatEnabled(false); // 未登录，开关保持关闭
+          } else {
+            setWechatEnabled(true); // 已登录
+          }
+        } else {
+          setWechatError(error || tt('bot.startFail'));
+        }
+      } else {
+        const { ok, state, error } = await wechatBotService.stop();
+        if (ok) {
+          setWechatState(state || null);
+          setWechatEnabled(false);
+        } else {
+          setWechatError(error || tt('bot.opFail'));
+        }
+      }
+    } catch (err) {
+      setWechatError(String(err));
+    } finally {
+      setWechatBusy(false);
+    }
+  };
+
+  /** 打开登录页面（webhook 模式无二维码图片，在新窗口打开 URL 扫码） */
+  const handleOpenLoginUrl = async () => {
+    if (loginUrl) {
+      window.open(loginUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    const { ok, data, error } = await wechatBotService.getLoginUrl();
+    if (ok && data?.url) {
+      setLoginUrl(data.url);
+      window.open(data.url, '_blank', 'noopener,noreferrer');
+    } else {
+      setWechatError(error || tt('bot.urlFail'));
+    }
+  };
+
+  /** 添加监听对象（含成功确认提示） */
+  const handleAddListen = async () => {
+    const name = listenInput.trim();
+    if (!name) return;
+    setWechatBusy(true);
+    setWechatError(null);
+    try {
+      const { ok, listen, added, message, error } = await wechatBotService.listen('add', name);
+      if (ok && listen) {
+        setListenList(listen);
+        // 确认是否真正加入：added=true 表示新增成功，added=false 表示已存在
+        if (added) {
+          // 新增成功，清空输入框，显示成功提示
+          setListenInput('');
+          setWechatError(null);
+          // 用 lastMessage 显示成功提示（3秒后自动消失）
+          setWechatSuccess(message || `已添加 '${name}' 到监听列表`);
+        } else {
+          // 已存在，提示用户
+          setWechatError(message || `'${name}' 已在监听列表中`);
+        }
+      } else {
+        setWechatError(error || tt('bot.addFail'));
+      }
+    } finally {
+      setWechatBusy(false);
+    }
+  };
+
+  /** 移除监听对象（含确认提示） */
+  const handleRemoveListen = async (name: string) => {
+    setWechatBusy(true);
+    setWechatError(null);
+    try {
+      const { ok, listen, removed, message, error } = await wechatBotService.listen('remove', name);
+      if (ok && listen) {
+        setListenList(listen);
+        if (removed) {
+          setWechatSuccess(message || `已从监听列表移除 '${name}'`);
+        } else {
+          setWechatError(message || `'${name}' 不在监听列表中`);
+        }
+      } else {
+        setWechatError(error || tt('bot.removeFail'));
+      }
+    } finally {
+      setWechatBusy(false);
+    }
+  };
+
+  /** 重置微信机器人（仅清空聊天历史，严禁清理账号信息） */
+  const handleWechatReset = async () => {
+    setWechatBusy(true);
+    setWechatError(null);
+    try {
+      const { ok, state, message, error } = await wechatBotService.reset();
+      if (ok) {
+        setWechatState(state || null);
+        // 显示清理范围确认：仅清聊天历史，账号信息/监听列表/登录态保留
+        setWechatSuccess(message || tt('bot.cleared'));
+      } else {
+        setWechatError(error || tt('bot.resetFail'));
+      }
+    } catch (err) {
+      setWechatError(String(err));
+    } finally {
+      setWechatBusy(false);
+    }
+  };
+
+  /**
+   * 获取本机IP，失败时自动重试3次（间隔500ms）
+   * 解决后端服务刚启动时 IP 获取失败导致一直显示"无法获取"的问题
+   */
+  const loadProvider = (id: string, list?: ApiProviderConfig[]) => {
+    const p = (list ?? providers).find((x) => x.id === id);
+    if (p) {
+      setSelectedProviderId(p.id);
+      // [v193] 框内显示脱敏值；真实 key 不进输入框状态
+      setApiKeyInput('');
+      setKeyEditing(false);
+      keyTouchedRef.current = false;
+      keyOriginalRef.current = null;
+      setCurrentKeyMasked(apiConfigService.maskKey(p.apiKey));
+      setBaseUrl(p.baseUrl);
+      setModel(p.model); setEnabled(p.enabled); setTestResult(null); setSaved(false);
+      try { localStorage.setItem('ruanlinyun_settings_provider', p.id); } catch { /* noop */ }
+      // [v153] 切换选中 → 通知 DSH active
+      const dsh = (window as any).dshHarness;
+      if (dsh?.providersSetActive) {
+        dsh.providersSetActive(p.id).then((r: any) => {
+          if (r?.ok && r.activeId) {
+            try { localStorage.setItem('ruanlinyun_settings_provider', r.activeId); } catch { /* noop */ }
+          }
+        }).catch(() => {});
+      }
+    }
+  };
+
+  /** [v176] 互斥启用：同一时刻只允许一个 provider 处于「启用」态。
+   *  用户打开下一个开关时，自动把上一个关掉，并把「当前生效」指到这一个。
+   *  这样「启用」与 DSH 的 active 是同一个概念，不会再出现
+   *  「软件里启用了 A、DSH 却按 B（甚至是空的）跑」的错位。 */
+  const applyExclusiveEnable = async (id: string) => {
+    for (const c of apiConfigService.getAll()) {
+      if (c.id !== id && c.enabled) await apiConfigService.update(c.id, { enabled: false });
+    }
+    const cur = apiConfigService.getAll().find((c) => c.id === id);
+    if (cur && !cur.enabled) await apiConfigService.update(id, { enabled: true });
+    apiConfigService.setActiveProvider(id);
+    setProviders(apiConfigService.getAll());
+  };
+
+  // [2026-09-20 v175.4] 统一判据：只看 baseUrl 是不是本机回环地址，不看 provider id。
+  //   本地端点（127.0.0.1 / localhost）一律允许 apiKey 留空——"本地模型不需要填 API 密钥"。
+  const apiKeyOptional = /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?(\/|$)/i.test(baseUrl);
+
+  // [v193] 测试/下发用的真实 key：编辑中用新输入值，否则取已存的解密 key
+  const currentRealKey = (): string => {
+    if (keyEditing && apiKeyInput.trim()) return apiKeyInput.trim();
+    const c = apiConfigService.getAll().find((x) => x.id === selectedProviderId);
+    return c?.apiKey || '';
+  };
+
+  const handleSave = async () => {
+    const payload: { apiKey?: string; baseUrl: string; model: string; enabled: boolean } = { baseUrl, model, enabled };
+    // [v194] 只在框内容与进入编辑前不同才提交（点一下就保存不会再吃掉 key）；删空=清除
+    if (keyTouchedRef.current && apiKeyInput.trim() !== (keyOriginalRef.current ?? '')) payload.apiKey = apiKeyInput.trim();
+    await apiConfigService.update(selectedProviderId, payload);
+    // [v176] 互斥：保存为「启用」时，其余 provider 一律关掉（同一时刻只有一个 API 生效）
+    if (enabled) {
+      for (const c of apiConfigService.getAll()) {
+        if (c.id !== selectedProviderId && c.enabled) {
+          await apiConfigService.update(c.id, { enabled: false });
+        }
+      }
+      apiConfigService.setActiveProvider(selectedProviderId);
+    }
+    if (keyTouchedRef.current) {
+      const savedKey = 'apiKey' in payload && payload.apiKey !== undefined ? payload.apiKey
+        : (apiConfigService.getAll().find((x) => x.id === selectedProviderId)?.apiKey || '');
+      setCurrentKeyMasked(apiConfigService.maskKey(savedKey));
+      setApiKeyInput('');
+      setKeyEditing(false);
+      keyTouchedRef.current = false;
+      keyOriginalRef.current = null;
+    }
+    const allNow = apiConfigService.getAll();
+    setProviders(allNow);
+    setSaved(true);
+    try { localStorage.setItem('ruanlinyun_settings_provider', selectedProviderId); } catch { /* noop */ }
+    setTimeout(() => setSaved(false), 2000);
+    // [v153] 保存后全量同步到 DSH/providers.json（含 key）
+    try {
+      const dsh = (window as any).dshHarness;
+      if (dsh?.providersSync) {
+        const sync = await dsh.providersSync({
+          fullSync: true,
+          // [v176] activeId 跟随「唯一启用的那个」；本次若是禁用操作则不覆盖 DSH 的 active（避免抖动）
+          activeId: enabled ? selectedProviderId : undefined,
+          providers: allNow.map((c) => ({
+            id: c.id,
+            name: c.name,
+            baseUrl: c.baseUrl,
+            model: c.model,
+            apiKey: c.apiKey || '',
+            enabled: c.enabled,
+          })),
+        });
+        console.log('[Settings] synced to DSH', sync?.activeId);
+      }
+    } catch (e) { console.warn('[Settings] DSH sync fail', e); }
+
+    // [v182] 原「下发 AI 模式到微信机器人后端 /api/v1/wechat-bot/ai-mode」已删除：
+    //   微信机器人后端路由已在 v181 中移除（routes/index.ts 不再挂载），该调用必然 404。
+    //   AI 配置的唯一下发通道 = 上面的 dshHarness.providersSync（DSH providers.json）。
+  };
+
+  const handleTest = async () => {
+    setTesting(true); setTestResult(null);
+    const result = await llmApiService.testConnection({
+      id: selectedProviderId, name: '', baseUrl, apiKey: currentRealKey(), model, enabled: true,
+    });
+    setTestResult(result); setTesting(false);
+  };
+
+  return (
+    <Box sx={{ width: '100%', px: { xs: 2, md: 3 }, py: 2, boxSizing: 'border-box' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+        <IconButton aria-label={tt('set.back')} sx={{ mr: 1 }} onClick={() => navigate(((): string => { try { return sessionStorage.getItem('settingsFrom') || '/'; } catch { return '/'; } })())}><ArrowBackIcon /></IconButton>
+        <Typography variant="h5" sx={{ fontWeight: 600 }}>{tt('settings.title')}</Typography>
+        <Box sx={{ flexGrow: 1 }} />
+        {/* [v139] tt('set.versionInfo')上移到标题行 */}
+        <Typography variant="caption" sx={{ color: 'text.secondary', pr: 0.5 }}>
+          {tt('set.appName')} v1.0.0
+        </Typography>
+      </Box>
+
+        {/* [v139] 双栏：左=AI模型（尺寸不变），右=通用+机器人（紧凑） */}
+      <Box sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', md: 'minmax(0,1.15fr) minmax(0,0.85fr)' },
+        gap: 2,
+        alignItems: 'start',
+        mb: 2,
+      }}>
+        {/* ---- AI模型配置（左栏，上移） ---- */}
+        <Paper elevation={3} sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom>{tt('settings.aiModel')}</Typography>
+          <Divider sx={{ mb: 3 }} />
+
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel id="model-select-label">{tt('settings.selectModel')}</InputLabel>
+            <Select id="model-select" labelId="model-select-label" value={selectedProviderId} label={tt('settings.selectModel')} onChange={(e) => loadProvider(e.target.value)}>
+              {providers.map((p) => (
+                <MenuItem key={p.id} value={p.id}>{p.name} ({p.model})</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={async () => {
+                const id = await apiConfigService.addLocalProvider();
+                const all = apiConfigService.getAll();
+                setProviders(all);
+                loadProvider(id, all);
+              }}
+            >
+              {tt('settings.addLocal')}
+            </Button>
+          </Box>
+
+          <TextField id="api-base-url" fullWidth label={tt('settings.baseUrl')} value={baseUrl}
+            onChange={(e) => setBaseUrl(e.target.value)}
+            placeholder={selectedProviderId === 'deepseek' ? 'https://api.deepseek.com' : tt('set.baseUrlLocalHint')}
+            helperText={selectedProviderId === 'deepseek' ? tt('set.deepseekDoc') : tt('set.baseUrlHint')}
+            InputProps={{ sx: { '& input::placeholder': { opacity: 0.4 } } }} sx={{ mb: 2 }} />
+
+          <TextField id="api-key" fullWidth
+            label={tt('settings.apiKey')}
+            type='text'
+            value={keyEditing ? apiKeyInput : currentKeyMasked}
+            onChange={(e) => setApiKeyInput(e.target.value)}
+            onFocus={() => { keyTouchedRef.current = true; if (!keyEditing) { setKeyEditing(true); setApiKeyInput(currentKeyMasked); keyOriginalRef.current = currentKeyMasked; } }}
+            onBlur={() => { if (apiKeyInput.trim() === (keyOriginalRef.current ?? '')) setKeyEditing(false); }}
+            placeholder='sk-xxx••••xxxx'
+            helperText={apiKeyOptional ? tt('set.apiKeyLocalHint2') : selectedProviderId === 'deepseek' ? tt('set.deepseekKeyHint') : 'AES-256-GCM加密存储'}
+            InputProps={{ sx: { '& input::placeholder': { opacity: 0.75 } } }} sx={{ mb: 2 }} />
+
+          <TextField id="model-name" fullWidth label={tt('settings.modelName')} value={model}
+            onChange={(e) => setModel(e.target.value)}
+            placeholder={selectedProviderId === 'deepseek' ? 'deepseek-v4-pro' : 'your-model-name'}
+            helperText={selectedProviderId === 'deepseek' ? 'DeepSeek V4 Pro: deepseek-v4-pro' : tt('set.modelNameHint')}
+            InputProps={{ sx: { '& input::placeholder': { opacity: 0.4 } } }} sx={{ mb: 2 }} />
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+            <FormControlLabel
+              control={<Switch checked={enabled} onChange={(e) => {
+                const on = e.target.checked;
+                setEnabled(on);
+                // [v176] 打开即互斥：立刻把其他 provider 关掉，不用等保存
+                if (on) void applyExclusiveEnable(selectedProviderId);
+              }} color="primary" />}
+              label={enabled ? tt('settings.enabled') : tt('settings.disabled')} />
+            <Box sx={{ flexGrow: 1 }} />
+            {!BUILTIN_PROVIDERS.some((p) => p.id === selectedProviderId) && (
+              <Button
+                variant="outlined"
+                color="error"
+                size="small"
+                startIcon={<DeleteIcon />}
+                onClick={async () => {
+                  if (!window.confirm(`确定删除该 provider 吗？\n\n软件与 DSH 共享列表将同步删除（删除优先，不会复活）。`)) return;
+                  const delId = selectedProviderId;
+                  const ok = await apiConfigService.removeProvider(delId);
+                  if (ok) {
+                    try {
+                      const dsh = (window as any).dshHarness;
+                      if (dsh?.providersDelete) await dsh.providersDelete(delId);
+                    } catch (e) { console.warn('[Settings] DSH delete fail', e); }
+                    const all = apiConfigService.getAll();
+                    setProviders(all);
+                    const next = all.find((c) => c.enabled) ?? all[0];
+                    if (next) loadProvider(next.id, all);
+                  } else {
+                    alert(tt('set.delBuiltinFail'));
+                  }
+                }}
+              >
+                {tt('settings.delete')}
+              </Button>
+            )}
+            {/* [2026-09-20 v175.4] 测试按钮不再拿 API Key 当门槛：填了地址+模型就能测，
+                本地端点无需密钥，通没通由测试结果自己说话 */}
+            <Button variant="outlined" size="small" onClick={handleTest} disabled={testing || !baseUrl.trim() || !model.trim()}
+              startIcon={testing ? <CircularProgress size={16} /> : <PlayArrowIcon />}>{tt('settings.test')}</Button>
+            <Button variant="contained" size="small" onClick={handleSave} color={saved ? 'success' : 'primary'}
+              startIcon={saved ? <CheckCircleIcon /> : undefined}>{saved ? tt('settings.saved') : tt('settings.save')}</Button>
+          </Box>
+
+          {testResult && <Alert severity={testResult.ok ? 'success' : 'error'} sx={{ mb: 2 }}>{testResult.message}</Alert>}
+
+          <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
+            {providers.map((p) => (
+              <Chip key={p.id} label={`${p.name}${p.enabled ? ' ✓' : ''}`}
+                color={p.enabled ? 'primary' : 'default'} variant={p.enabled ? 'filled' : 'outlined'} size="small"
+                onClick={() => loadProvider(p.id)} />
+            ))}
+          </Box>
+        </Paper>
+
+        {/* ---- 右栏：通用 + 机器人（紧凑） ---- */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Paper elevation={3} sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom>{tt('persona.title')}</Typography>
+            {devMode ? (
+              <>
+                <Typography variant="body2" sx={{ color: '#666', mb: 1 }}>{tt('persona.desc')}</Typography>
+                <TextField
+                  fullWidth
+                  multiline
+                  minRows={4}
+                  maxRows={10}
+                  value={personaText}
+                  onChange={(e) => { setPersonaText(e.target.value); setPersonaSaved(false); }}
+                  placeholder={tt('persona.placeholder')}
+                  sx={{ mb: 1 }}
+                />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Button
+                    variant="contained"
+                    onClick={() => { try { localStorage.setItem('rl_persona_text', personaText.trim()); setPersonaSaved(true); setTimeout(() => setPersonaSaved(false), 2500); } catch { /* noop */ } }}
+                    disabled={personaSaved}
+                  >
+                    {personaSaved ? tt('persona.saved') : tt('persona.save')}
+                  </Button>
+                  {!personaText.trim() && <Typography variant="caption" sx={{ color: '#999' }}>{tt('persona.devOnly')}</Typography>}
+                </Box>
+              </>
+            ) : (
+              <Typography variant="body2" sx={{ color: '#999' }}>{tt('persona.devOnly')}</Typography>
+            )}
+          </Paper>
+          <Paper elevation={3} sx={{ p: 2 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>{tt('settings.general')}</Typography>
+            <Divider sx={{ mb: 1.5 }} />
+            <FormControlLabel
+              sx={{ mx: 0, display: 'flex' }}
+              control={<Switch size="small" checked={isDarkMode} onChange={(e) => setIsDarkMode(e.target.checked)} color="primary" />}
+              label={<Typography variant="body2">{tt('settings.darkMode')}</Typography>} />
+            {/* [v179] DSH 常驻服务开关：DSH 服务的**唯一关闭入口**——关={tt('set.stopNow')} DSH 服务；
+                开=DSH 后台常驻（无托盘图标）+ 软件启动时自动预热。退出软件只收托盘、不动 DSH 服务。 */}
+            {((window as any).Capacitor?.isNativePlatform?.() || /android|iphone|ipad|mobile/i.test(navigator.userAgent || '')) ? null : (
+            <FormControlLabel
+              sx={{ mx: 0, display: 'flex', mt: 0.5 }}
+              control={<Switch size="small" checked={dshResident} onChange={(e) => handleResidentToggle(e.target.checked)} color="primary" />}
+              label={
+                <Box>
+                  <Typography variant="body2">{tt('settings.dshResident')}</Typography>
+                  <Typography variant="caption" sx={{ color: '#666' }}>
+                    {dshResident ? tt('settings.dshResidentOn') : tt('settings.dshResidentOff')}
+                  </Typography>
+                </Box>
+              } />
+            )}{/* [v183-R7] 手机端隐藏 DSH 常驻开关（Electron IPC 专有） */}
+            {/* [v181] 语言切换：仅中文/英文；切换后全 UI 文案跟随（i18n 事件广播） */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+              <Typography variant="body2" sx={{ minWidth: 40 }}>{tt('settings.language')}</Typography>
+              <Select
+                size="small"
+                value={lang}
+                onChange={(e) => { const v = e.target.value as Lang; setLang(v); setLangSt(v); }}
+                sx={{ minWidth: 120 }}
+              >
+                <MenuItem value="zh">中文</MenuItem>
+                <MenuItem value="en">{lang === 'en' ? 'English' : 'English'}</MenuItem>
+              </Select>
+            </Box>
+          </Paper>
+
+          {/* 机器人：缩小 + 重排，保证可读与操作；[v173] 仅开发者功能开启时显示 */}
+          {devMode && (
+          <Accordion elevation={3} defaultExpanded={false} sx={{ borderRadius: 1, overflow: 'hidden', '&:before': { display: 'none' } }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ minHeight: 44, '& .MuiAccordionSummary-content': { my: 0.5 } }}>
+              <Typography variant="subtitle1" sx={{ flexGrow: 1, fontWeight: 600 }}>{tt('settings.robot')}</Typography>
+              {wechatBusy && <CircularProgress size={16} sx={{ mr: 1 }} />}
+              {wechatState && (
+                <Chip
+                  size="small"
+                  sx={{ mr: 1, height: 22 }}
+                  color={
+                    wechatState.status === 'running' ? 'success' :
+                    wechatState.status === 'error' ? 'error' :
+                    wechatState.status === 'idle' ? 'warning' : 'default'
+                  }
+                  label={
+                    wechatState.status === 'running' ? tt('bot.running') :
+                    wechatState.status === 'stopped' ? tt('bot.stopped') :
+                    wechatState.status === 'error' ? tt('bot.error') : tt('bot.notLogged')
+                  }
+                />
+              )}
+            </AccordionSummary>
+            <AccordionDetails sx={{ pt: 1, px: 2, pb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, flexWrap: 'wrap' }}>
+                <FormControlLabel
+                  sx={{ mx: 0 }}
+                  control={<Switch size="small" checked={wechatEnabled} onChange={(e) => handleWechatToggle(e.target.checked)} color="primary" disabled={wechatBusy} />}
+                  label={<Typography variant="body2">{wechatEnabled ? tt('common.on') : tt('common.off')}</Typography>} />
+                <Box sx={{ flexGrow: 1 }} />
+                {wechatState && (wechatState.status === 'idle' || wechatState.status === 'error') && (
+                  <Button size="small" variant="contained" color="warning" startIcon={<QrCodeIcon />} onClick={handleOpenLoginUrl}>
+                    扫码登录
+                  </Button>
+                )}
+                <Button size="small" variant="outlined" startIcon={<RefreshIcon />} onClick={handleWechatReset} disabled={wechatBusy}>
+                  清空历史
+                </Button>
+              </Box>
+
+              <Alert severity="info" sx={{ mb: 1, py: 0.5, '& .MuiAlert-message': { fontSize: 12 } }}>
+                通过 wechatbot-webhook 收发消息；首次需扫码登录微信小号。
+              </Alert>
+
+              {wechatState && wechatState.status === 'idle' && (
+                <Alert severity="warning" sx={{ mb: 1, py: 0.5, '& .MuiAlert-message': { fontSize: 12 } }}>
+                  登录态可能已过期，请重新扫码。
+                </Alert>
+              )}
+
+              {wechatState && (
+                <Box sx={{ mb: 1, p: 1, bgcolor: 'background.default', borderRadius: 1 }}>
+                  <Typography variant="caption" display="block">
+                    <strong>{tt('bot.plugin')}</strong> {wechatState.plugin || 'wechatbot-webhook'}
+                    {wechatState.name ? ` · ${wechatState.name}` : ''}
+                  </Typography>
+                  {(wechatState.incoming_count !== undefined || wechatState.outgoing_count !== undefined) && (
+                    <Typography variant="caption" display="block" sx={{ mt: 0.25 }}>
+                      <strong>{tt('bot.io')}</strong> {wechatState.incoming_count || 0} / {wechatState.outgoing_count || 0}
+                    </Typography>
+                  )}
+                  {wechatState.last_message && (
+                    <Typography variant="caption" display="block" sx={{ mt: 0.25 }} noWrap>
+                      <strong>{tt('bot.lastMsg')}</strong> {wechatState.last_message}
+                    </Typography>
+                  )}
+                  {wechatState.last_error && (
+                    <Typography variant="caption" display="block" color="error" sx={{ mt: 0.25 }} noWrap>
+                      <strong>{tt('bot.err')}</strong> {wechatState.last_error}
+                    </Typography>
+                  )}
+                </Box>
+              )}
+
+              <Box sx={{ p: 1, bgcolor: 'background.default', borderRadius: 1 }}>
+                <Typography variant="caption" display="block" sx={{ mb: 0.75 }}>
+                  <strong>{tt('bot.watchList')}</strong>（仅响应列表内好友/群，为空则不响应）
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 0.75, mb: 0.75 }}>
+                  <TextField
+                    size="small"
+                    placeholder={tt('bot.watchPlaceholder')}
+                    value={listenInput}
+                    onChange={(e) => setListenInput(e.target.value)}
+                    sx={{ flexGrow: 1, '& .MuiInputBase-input': { fontSize: 13, py: 0.75 } }}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleAddListen(); }}
+                  />
+                  <Button size="small" variant="contained" onClick={handleAddListen} disabled={wechatBusy || !listenInput.trim()}>
+                    添加
+                  </Button>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                  {listenList.length === 0 ? (
+                    <Typography variant="caption" color="text.secondary">{tt('bot.noWatch')}</Typography>
+                  ) : (
+                    listenList.map((name) => (
+                      <Chip key={name} label={name} size="small" onDelete={() => handleRemoveListen(name)} disabled={wechatBusy} />
+                    ))
+                  )}
+                </Box>
+              </Box>
+
+              {wechatError && (
+                <Alert severity="error" sx={{ mt: 1 }} onClose={() => setWechatError(null)}>{wechatError}</Alert>
+              )}
+              {wechatSuccess && (
+                <Alert severity="success" sx={{ mt: 1 }} onClose={() => setWechatSuccess(null)}>{wechatSuccess}</Alert>
+              )}
+            </AccordionDetails>
+          </Accordion>
+          )}
+
+          {/* [v140] 关于：放在机器人下边（[v173] 去掉「安全」卡；tt('set.versionInfo')/tt('set.devMode')默认展开） */}
+          <Paper elevation={3} sx={{ p: 2 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>{tt('settings.about')}</Typography>
+            <Divider sx={{ mb: 1.5 }} />
+            <Accordion defaultExpanded sx={{ '&:before': { display: 'none' } }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography variant="body2">{tt('set.versionInfo')}</Typography>
+              </AccordionSummary>
+              <AccordionDetails sx={{ pt: 0 }}>
+                <Typography variant="body2">{tt('set.appName')} v1.0.0</Typography>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion defaultExpanded sx={{ '&:before': { display: 'none' } }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography variant="body2">{tt('set.devMode')}</Typography>
+              </AccordionSummary>
+              <AccordionDetails sx={{ pt: 0 }}>
+                <DeveloperModePanel devMode={devMode} onChange={handleDevModeChange} />
+              </AccordionDetails>
+            </Accordion>
+          </Paper>
+        </Box>
+      </Box>
+
+      {/* ===== [v179] 「关闭 DSH 常驻服务」三级确认 =====
+          替换式（不是叠叠乐）：同一个 Dialog 换内容，stage 1 → 2 → 3；
+          任何一层的右上角 X 都等于「取消」，且不留残余。stage 3 无操作按钮，只有 X，0.5 秒后自动关。 */}
+      <Dialog open={residentStage > 0} onClose={closeResidentFlow} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', pr: 1, pb: 1 }}>
+          <span>
+            {residentStage === 1 && tt('set.closeDshQ')}
+            {residentStage === 2 && tt('set.xiaoRuanRuan')}
+            {residentStage === 3 && tt('set.dshClosed')}
+          </span>
+          <Box sx={{ flexGrow: 1 }} />
+          <IconButton size="small" onClick={closeResidentFlow} aria-label={tt('win.close')}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          {residentStage === 1 && (
+            <Box>
+              <Typography variant="body2" sx={{ mb: 1 }}><strong>{tt('set.whatItDoes')}</strong></Typography>
+              <Typography variant="body2" sx={{ color: '#444', mb: 1.5 }}>
+                DSH（DeepSeek Harness）是阮云小宠的大脑服务。开启后它在后台常驻运行（没有任何托盘图标），
+                {tt('set.residentDesc1').replace('{sec}', '秒开')}；
+                关闭软件后 DSH 也会继续在后台运行，方便下次秒开。
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}><strong>{tt('set.whatIfOff')}</strong></Typography>
+              <Typography variant="body2" sx={{ color: '#444' }}>
+                · DSH 服务会<strong>{tt('set.stopNow')}</strong>（这是关闭 DSH 服务的唯一入口）
+                <br />
+                · 软件启动不再预热，下次进入 DSH 页面需等待约 30 秒
+                <br />
+                · 退出软件只关闭托盘图标，不会动 DSH 服务（关 DSH 只能来这里）
+              </Typography>
+            </Box>
+          )}
+          {residentStage === 2 && (
+            <Typography variant="body2" sx={{ color: '#444', lineHeight: 1.9 }}>
+              亲爱的用户，您真的要关闭小阮阮的 DSH 常驻服务吗？呜呜呜，小阮阮会乖乖的，不要关掉我好不好……(っ﹏⊂)
+            </Typography>
+          )}
+          {residentStage === 3 && (
+            <Typography variant="body2" sx={{ color: '#444' }}>
+              DSH 常驻服务已成功关闭……(っ﹏⊂) 呜呜
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 1.5 }}>
+          {residentStage === 1 && (
+            <>
+              <Button color="warning" variant="contained" onClick={() => setResidentStage(2)}>{tt('set.insistClose')}</Button>
+              <Button onClick={closeResidentFlow}>{tt('set.cancel')}</Button>
+            </>
+          )}
+          {residentStage === 2 && (
+            <>
+              <Button color="error" variant="contained" onClick={confirmResidentOff}>{tt('set.forceClose')}</Button>
+              <Button onClick={closeResidentFlow}>{tt('set.cancel')}</Button>
+            </>
+          )}
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+}
+
+
+// [v80] tt('set.devMode')面板（[v173] 改为受控组件：开关状态提升到 SettingsPage，用于控制机器人卡片显隐）
+function DeveloperModePanel({ devMode, onChange }: { devMode: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+        <Typography variant="body2">{tt('set.devExperimental')}</Typography>
+        <Switch size="small" checked={devMode} onChange={(e) => onChange(e.target.checked)} />
+      </Box>
+      <Typography variant="caption" sx={{ color: '#666', display: 'block' }}>
+        开启后开放开发者专属功能（机器人卡片、日志查看、接口调试等）。
+      </Typography>
+    </Box>
+  );
+}
+
+export default SettingsPage;

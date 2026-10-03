@@ -1,0 +1,587 @@
+{
+  "wordCategoryBig": [
+    {
+      "big_id": 1,
+      "big_name": "名词",
+      "big_desc": "表示人、事物、地点等的词汇"
+    },
+    {
+      "big_id": 2,
+      "big_name": "动词",
+      "big_desc": "表示动作、行为的词汇"
+    },
+    {
+      "big_id": 3,
+      "big_name": "形容词",
+      "big_desc": "表示性质、状态的词汇"
+    },
+    {
+      "big_id": 4,
+      "big_name": "科技",
+      "big_desc": "科技相关的词汇"
+    }
+  ],
+  "wordCategorySmall": [
+    {
+      "small_id": 1,
+      "big_id": 1,
+      "small_name": "名词-动物",
+      "small_desc": "表示动物的词汇"
+    },
+    {
+      "small_id": 2,
+      "big_id": 1,
+      "small_name": "名词-水果",
+      "small_desc": "表示水果的词汇"
+    },
+    {
+      "small_id": 3,
+      "big_id": 1,
+      "small_name": "名词-品牌",
+      "small_desc": "表示品牌的词汇"
+    },
+    {
+      "small_id": 4,
+      "big_id": 2,
+      "small_name": "动词-动作",
+      "small_desc": "表示具体动作的词汇"
+    },
+    {
+      "small_id": 5,
+      "big_id": 3,
+      "small_name": "形容词-描述",
+      "small_desc": "表示描述性质的词汇"
+    },
+    {
+      "small_id": 6,
+      "big_id": 4,
+      "small_name": "科技-AI",
+      "small_desc": "人工智能相关的词汇"
+    }
+  ],
+  "wordMain": [
+    {
+      "word_id": 1,
+      "word_text": "苹果",
+      "small_id": 2,
+      "create_time": "2026-02-27T07:00:34.795Z"
+    },
+    {
+      "word_id": 2,
+      "word_text": "苹果",
+      "small_id": 3,
+      "create_time": "2026-02-27T07:00:34.795Z"
+    },
+    {
+      "word_id": 3,
+      "word_text": "运行",
+      "small_id": 4,
+      "create_time": "2026-02-27T07:00:34.795Z"
+    },
+    {
+      "word_id": 4,
+      "word_text": "智能",
+      "small_id": 5,
+      "create_time": "2026-02-27T07:00:34.795Z"
+    },
+    {
+      "word_id": 5,
+      "word_text": "人工智能",
+      "small_id": 6,
+      "create_time": "2026-02-27T07:00:34.795Z"
+    }
+  ],
+  "wordMeaning": [
+    {
+      "meaning_id": 1,
+      "word_id": 1,
+      "meaning_text": "一种水果",
+      "context_feature": "水果,吃的,红色,甜味",
+      "example_sentence": "我喜欢吃苹果"
+    },
+    {
+      "meaning_id": 2,
+      "word_id": 2,
+      "meaning_text": "苹果公司",
+      "context_feature": "电子,手机,科技,品牌",
+      "example_sentence": "苹果手机很受欢迎"
+    },
+    {
+      "meaning_id": 3,
+      "word_id": 3,
+      "meaning_text": "进行某项活动",
+      "context_feature": "动作,执行,操作",
+      "example_sentence": "程序正在运行"
+    },
+    {
+      "meaning_id": 4,
+      "word_id": 4,
+      "meaning_text": "具有智慧的",
+      "context_feature": "形容词,聪明,高级",
+      "example_sentence": "这是一个智能系统"
+    },
+    {
+      "meaning_id": 5,
+      "word_id": 5,
+      "meaning_text": "人工智能技术",
+      "context_feature": "科技,计算机,算法,智能",
+      "example_sentence": "人工智能正在改变世界"
+    }
+  ],
+  "chatSessions": [
+    {
+      "id": "test",
+      "messages": [
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772256540728",
+          "timestamp": 1772256540728
+        },
+        {
+          "role": "assistant",
+          "content": "我正在努力理解你说的话，能再给我一点提示吗？",
+          "id": "1772256540897",
+          "timestamp": 1772256540897
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772256639560",
+          "timestamp": 1772256639560
+        },
+        {
+          "role": "assistant",
+          "content": "我觉得这个问题挺复杂的，我们可以一起讨论一下。",
+          "id": "1772256639645",
+          "timestamp": 1772256639645
+        }
+      ],
+      "created_at": 1772256540727,
+      "last_updated": 1772256639645
+    },
+    {
+      "id": "test2",
+      "messages": [
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772256773926",
+          "timestamp": 1772256773926
+        },
+        {
+          "role": "assistant",
+          "content": "我觉得这个问题挺复杂的，我们可以一起讨论一下。",
+          "id": "1772256773938",
+          "timestamp": 1772256773939
+        }
+      ],
+      "created_at": 1772256773925,
+      "last_updated": 1772256773939
+    },
+    {
+      "id": "test3",
+      "messages": [
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772256988732",
+          "timestamp": 1772256988732
+        },
+        {
+          "role": "assistant",
+          "content": "这个问题挺有意思的，让我想想怎么回答你。",
+          "id": "1772256988830",
+          "timestamp": 1772256988830
+        }
+      ],
+      "created_at": 1772256988731,
+      "last_updated": 1772256988830
+    },
+    {
+      "id": "test4",
+      "messages": [
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772257049761",
+          "timestamp": 1772257049761
+        },
+        {
+          "role": "assistant",
+          "content": "我觉得这个问题挺复杂的，我们可以一起讨论一下。",
+          "id": "1772257049944",
+          "timestamp": 1772257049944
+        }
+      ],
+      "created_at": 1772257049760,
+      "last_updated": 1772257049944
+    },
+    {
+      "id": "test5",
+      "messages": [
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772257249317",
+          "timestamp": 1772257249317
+        },
+        {
+          "role": "assistant",
+          "content": "抱歉，我现在有点不太理解你的意思，能换个方式表达吗？",
+          "id": "1772257249428",
+          "timestamp": 1772257249428
+        }
+      ],
+      "created_at": 1772257249316,
+      "last_updated": 1772257249428
+    },
+    {
+      "id": "test6",
+      "messages": [
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772257300570",
+          "timestamp": 1772257300570
+        },
+        {
+          "role": "assistant",
+          "content": "这个问题挺有意思的，让我想想怎么回答你。",
+          "id": "1772257300747",
+          "timestamp": 1772257300747
+        }
+      ],
+      "created_at": 1772257300569,
+      "last_updated": 1772257300747
+    },
+    {
+      "id": "test7",
+      "messages": [
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772257427220",
+          "timestamp": 1772257427220
+        },
+        {
+          "role": "assistant",
+          "content": "这个问题挺有意思的，让我想想怎么回答你。",
+          "id": "1772257427348",
+          "timestamp": 1772257427348
+        }
+      ],
+      "created_at": 1772257427219,
+      "last_updated": 1772257427348
+    },
+    {
+      "id": "test8",
+      "messages": [
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772257471890",
+          "timestamp": 1772257471890
+        },
+        {
+          "role": "assistant",
+          "content": "这个话题挺有趣的，我很想听听你的看法。",
+          "id": "1772257472084",
+          "timestamp": 1772257472084
+        }
+      ],
+      "created_at": 1772257471889,
+      "last_updated": 1772257472084
+    },
+    {
+      "id": "test-session",
+      "messages": [
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772257875687",
+          "timestamp": 1772257875687
+        },
+        {
+          "role": "assistant",
+          "content": "我觉得这个问题挺复杂的，我们可以一起讨论一下。",
+          "id": "1772257875870",
+          "timestamp": 1772257875870
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772257980304",
+          "timestamp": 1772257980304
+        },
+        {
+          "role": "assistant",
+          "content": "好的，我知道了，让我想想怎么帮你。",
+          "id": "1772257980453",
+          "timestamp": 1772257980453
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772258058158",
+          "timestamp": 1772258058158
+        },
+        {
+          "role": "assistant",
+          "content": "抱歉，我现在有点不太理解你的意思，能换个方式表达吗？",
+          "id": "1772258058288",
+          "timestamp": 1772258058288
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772258152094",
+          "timestamp": 1772258152094
+        },
+        {
+          "role": "assistant",
+          "content": "嗯，这个问题我需要思考一下，稍后给你答复。",
+          "id": "1772258152258",
+          "timestamp": 1772258152258
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772258177403",
+          "timestamp": 1772258177403
+        },
+        {
+          "role": "assistant",
+          "content": "这个问题挺有意思的，让我想想怎么回答你。",
+          "id": "1772258177440",
+          "timestamp": 1772258177440
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772258292968",
+          "timestamp": 1772258292968
+        },
+        {
+          "role": "assistant",
+          "content": "抱歉，我现在有点不太理解你的意思，能换个方式表达吗？",
+          "id": "1772258293142",
+          "timestamp": 1772258293142
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772258469942",
+          "timestamp": 1772258469942
+        },
+        {
+          "role": "assistant",
+          "content": "这个话题挺有趣的，我很想听听你的看法。",
+          "id": "1772258470096",
+          "timestamp": 1772258470096
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772258513996",
+          "timestamp": 1772258513996
+        },
+        {
+          "role": "assistant",
+          "content": "嗯，这个问题我需要思考一下，稍后给你答复。",
+          "id": "1772258514032",
+          "timestamp": 1772258514032
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772258569889",
+          "timestamp": 1772258569889
+        },
+        {
+          "role": "assistant",
+          "content": "这个话题挺有趣的，我很想听听你的看法。",
+          "id": "1772258570020",
+          "timestamp": 1772258570020
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772258677504",
+          "timestamp": 1772258677504
+        },
+        {
+          "role": "assistant",
+          "content": "抱歉，我现在有点不太理解你的意思，能换个方式表达吗？",
+          "id": "1772258677667",
+          "timestamp": 1772258677667
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772258950464",
+          "timestamp": 1772258950464
+        },
+        {
+          "role": "assistant",
+          "content": "嗯，这个问题我需要思考一下，稍后给你答复。",
+          "id": "1772258950651",
+          "timestamp": 1772258950651
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772259045405",
+          "timestamp": 1772259045405
+        },
+        {
+          "role": "assistant",
+          "content": "你的问题很有深度，让我仔细想想。",
+          "id": "1772259045644",
+          "timestamp": 1772259045644
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772259103302",
+          "timestamp": 1772259103302
+        },
+        {
+          "role": "assistant",
+          "content": "我觉得这个问题挺复杂的，我们可以一起讨论一下。",
+          "id": "1772259103483",
+          "timestamp": 1772259103483
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772259212566",
+          "timestamp": 1772259212566
+        },
+        {
+          "role": "assistant",
+          "content": "好的，我知道了，让我想想怎么帮你。",
+          "id": "1772259212731",
+          "timestamp": 1772259212731
+        }
+      ],
+      "created_at": 1772257875686,
+      "last_updated": 1772259212731
+    },
+    {
+      "id": "default",
+      "messages": [
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772259733759",
+          "timestamp": 1772259733759
+        },
+        {
+          "role": "assistant",
+          "content": "你说的这个我有点不太明白，能再详细说说吗？",
+          "id": "1772259733890",
+          "timestamp": 1772259733890
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772259806973",
+          "timestamp": 1772259806973
+        },
+        {
+          "role": "assistant",
+          "content": "抱歉，我现在有点不太理解你的意思，能换个方式表达吗？",
+          "id": "1772259807041",
+          "timestamp": 1772259807041
+        },
+        {
+          "role": "user",
+          "content": "??",
+          "id": "1772259857161",
+          "timestamp": 1772259857161
+        },
+        {
+          "role": "assistant",
+          "content": "好的，我知道了，让我想想怎么帮你。",
+          "id": "1772259857310",
+          "timestamp": 1772259857310
+        },
+        {
+          "role": "user",
+          "content": "你好",
+          "id": "1772259998612",
+          "timestamp": 1772259998612
+        },
+        {
+          "role": "assistant",
+          "content": "晚上好！今天过得还愉快吗？",
+          "id": "1772259998629",
+          "timestamp": 1772259998629
+        },
+        {
+          "role": "user",
+          "content": "你好",
+          "id": "1772260945655",
+          "timestamp": 1772260945655
+        },
+        {
+          "role": "assistant",
+          "content": "嘿！最近怎么样？有什么新鲜事吗？",
+          "id": "1772260945693",
+          "timestamp": 1772260945693
+        },
+        {
+          "role": "user",
+          "content": "你叫什么名字",
+          "id": "1772260958047",
+          "timestamp": 1772260958047
+        },
+        {
+          "role": "assistant",
+          "content": "你好，我是阮琳云，一个友好的AI助手。我喜欢和人聊天，也能帮你解决一些问题。",
+          "id": "1772260958070",
+          "timestamp": 1772260958070
+        },
+        {
+          "role": "user",
+          "content": "你好",
+          "id": "1772260976760",
+          "timestamp": 1772260976760
+        },
+        {
+          "role": "assistant",
+          "content": "嗨！有什么好玩的事想和我分享吗？",
+          "id": "1772260976772",
+          "timestamp": 1772260976772
+        },
+        {
+          "role": "user",
+          "content": "你好",
+          "id": "1772261175850",
+          "timestamp": 1772261175850
+        },
+        {
+          "role": "assistant",
+          "content": "嘿！最近怎么样？有什么新鲜事吗？",
+          "id": "1772261175887",
+          "timestamp": 1772261175887
+        },
+        {
+          "role": "user",
+          "content": "很好，你叫什么名字？",
+          "id": "1772261235547",
+          "timestamp": 1772261235548
+        },
+        {
+          "role": "assistant",
+          "content": "我是阮琳云智能助手，很高兴认识你！我可以陪你聊天、回答问题，还能帮你查各种信息。",
+          "id": "1772261235558",
+          "timestamp": 1772261235558
+        }
+      ],
+      "created_at": 1772259733758,
+      "last_updated": 1772261235558
+    }
+  ]
+}

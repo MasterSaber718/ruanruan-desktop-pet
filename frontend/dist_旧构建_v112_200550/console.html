@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>壁纸控制台</title>
+<style>
+  /* ══════════ 白色悬浮球控制台（v69）══════════
+     拖拽方案：-webkit-app-region 在本透明无框窗口上实测不可用（v67/v68 两次验证），
+     改为手动拖拽——鼠标事件算位移 → IPC setPosition，不依赖窗口命中测试，保证可拖。
+     形态：
+       1) 悬浮球（默认）：56px 白球，左/右键按住拖动，点中间 >_ 展开
+       2) 面板：白色卡片，标题栏拖动；点面板外任何地方（窗口失焦）自动收回为球
+     窗口层级为普通窗口（不置顶）：打开其他软件时球被自然盖住，只待在桌面上。 */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: transparent;
+    overflow: hidden;
+    font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    user-select: none;
+  }
+  /* ───── 悬浮球形态（默认） ───── */
+  #bubble {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.97);
+    border: 1.5px solid rgba(25, 118, 210, 0.55);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    display: flex; align-items: center; justify-content: center;
+    cursor: move;
+  }
+  #bubble span {
+    color: #1976d2; font-size: 15px; font-weight: bold;
+    font-family: 'Cascadia Mono', Consolas, monospace;
+    cursor: pointer; padding: 10px;  /* 扩大点击热区 */
+  }
+  #bubble span:active { color: #0d47a1; }
+  /* ───── 面板形态 ───── */
+  #panel {
+    display: none;
+    width: 272px;
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    border-radius: 12px;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.22);
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+  }
+  #titlebar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.04);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    cursor: move;
+  }
+  #titlebar .glyph { color: #1976d2; font-weight: bold; font-size: 14px; }
+  #titlebar .title { color: #1a1a1a; font-size: 12.5px; font-weight: 600; letter-spacing: 0.5px; flex: 1; }
+  #titlebar .minibtn {
+    background: transparent; border: none; color: #888;
+    font-family: inherit; font-size: 15px; cursor: pointer; padding: 0 4px;
+  }
+  #titlebar .minibtn:hover { color: #1976d2; }
+  #body { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  #status { color: #777; font-size: 11px; padding: 0 2px; }
+  .row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 8px;
+    background: #ffffff; color: #1a1a1a;
+    font-size: 12.5px; font-family: inherit;
+    cursor: pointer; text-align: left; width: 100%;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .row:hover { border-color: #1976d2; background: #f0f7ff; }
+  .row .prompt { color: #1976d2; font-weight: bold; }
+  .row.primary { border-color: rgba(25, 118, 210, 0.5); }
+  #hint { color: #999; font-size: 10.5px; line-height: 1.6; padding: 0 2px 2px; }
+  #err { color: #d32f2f; font-size: 11px; padding: 0 2px; display: none; }
+</style>
+</head>
+<body>
+  <div id="bubble"><span id="expandGlyph">&gt;_</span></div>
+  <div id="panel">
+    <div id="titlebar">
+      <span class="glyph">&gt;_</span>
+      <span class="title">壁纸控制台</span>
+      <button class="minibtn" id="collapseBtn" title="收起为悬浮球">&minus;</button>
+    </div>
+    <div id="body">
+      <div id="status">初始化…</div>
+      <button class="row primary" id="petBtn"><span class="prompt">&gt;</span> 桌面宠物模式</button>
+      <button class="row" id="exitBtn"><span class="prompt">&gt;</span> 退出壁纸模式 (F11)</button>
+      <div id="hint">按住球/标题栏拖动 · 点 &gt;_ 展开 · 点外面收回球</div>
+      <div id="err"></div>
+    </div>
+  </div>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const wm = window.wallpaperMode;
+  const err = (msg) => { const e = $('err'); e.textContent = '> ' + msg; e.style.display = 'block'; };
+  const BALL = { w: 56, h: 56 }, PANEL = { w: 272, h: 250 };
+
+  function setSize(w, h) {
+    try { wm && wm.setConsoleSize && wm.setConsoleSize(w, h); } catch (e) { /* 旧主进程无此接口，忽略 */ }
+  }
+  function showBubble() {
+    $('panel').style.display = 'none';
+    $('bubble').style.display = 'flex';
+    setSize(BALL.w, BALL.h);
+  }
+  function showPanel() {
+    $('bubble').style.display = 'none';
+    $('panel').style.display = 'block';
+    setSize(PANEL.w, PANEL.h);
+  }
+
+  // ───── [v69] 手动拖拽：左/右键按住球或标题栏即可拖动 ─────
+  function makeDraggable(el) {
+    el.addEventListener('pointerdown', async (e) => {
+      // 点 >_ 展开 / 点 − 收起 的热区不参与拖拽（子元素自己处理 click）
+      if (e.target.id === 'expandGlyph' || e.target.classList.contains('minibtn')) return;
+      if (!wm || !wm.getConsolePos) return;
+      e.preventDefault();
+      const pos = await wm.getConsolePos();
+      if (!pos) return;
+      const startX = e.screenX, startY = e.screenY;
+      let last = 0;
+      const onMove = (ev) => {
+        const now = performance.now();
+        if (now - last < 16) return;  // ~60fps 节流，避免 IPC 洪水
+        last = now;
+        const nx = pos.x + (ev.screenX - startX);
+        const ny = pos.y + (ev.screenY - startY);
+        wm.setConsolePos(nx, ny);
+      };
+      const onUp = () => {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onUp);
+      };
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+      window.addEventListener('pointercancel', onUp);
+    });
+  }
+  makeDraggable($('bubble'));
+  makeDraggable($('titlebar'));
+
+  (async () => {
+    try {
+      if (!wm) { $('status').textContent = 'preload 未注入（非 Electron 环境）'; return; }
+      const st = await wm.getStatus();
+      $('status').textContent = '> wallpaper active=' + !!st.active + ' · model=' + (st.hasModel ? 'ready' : 'none');
+    } catch (e) { $('status').textContent = '> status: ' + (e.message || e); }
+  })();
+
+  $('expandGlyph').addEventListener('click', showPanel);
+  $('collapseBtn').addEventListener('click', showBubble);
+
+  // [v69] 点面板/球外面的任何地方 → 窗口失焦 → 自动收回为悬浮球
+  if (wm && typeof wm.onConsoleBlur === 'function') {
+    wm.onConsoleBlur(() => {
+      if ($('panel').style.display !== 'none') showBubble();
+    });
+  }
+
+  $('petBtn').addEventListener('click', async () => {
+    try { const r = await wm.showPet(); if (r && r.success === false) err(r.error || '切换失败'); }
+    catch (e) { err(e.message || String(e)); }
+  });
+  $('exitBtn').addEventListener('click', async () => {
+    try { const r = await wm.exit(); if (r && r.success === false) err(r.error || '退出失败'); }
+    catch (e) { err(e.message || String(e)); }
+  });
+
+  // 启动即悬浮球形态（窗口初始尺寸与球一致，防止透明区域挡桌面点击）
+  showBubble();
+</script>
+</body>
+</html>

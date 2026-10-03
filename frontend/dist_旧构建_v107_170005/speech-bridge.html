@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>语音识别桥 · Edge</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: #f3f7f6; color: #263238; min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; padding: 28px 20px;
+    }
+    h1 { font-size: 18px; font-weight: 600; color: #004d40; margin-bottom: 6px; }
+    .sub { font-size: 13px; color: #607d8b; margin-bottom: 18px; }
+    .card {
+      width: min(520px, 100%); background: #fff; border-radius: 12px;
+      border: 1px solid #b2dfdb; padding: 18px 20px; box-shadow: 0 4px 16px rgba(0,0,0,.06);
+    }
+    .row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; background: #90a4ae; }
+    .dot.on { background: #00c853; box-shadow: 0 0 0 4px rgba(0,200,83,.2); }
+    .dot.err { background: #e53935; }
+    #status { font-size: 14px; font-weight: 600; color: #00695c; }
+    #live {
+      min-height: 72px; background: #e0f2f1; border-radius: 8px;
+      padding: 12px 14px; font-size: 16px; line-height: 1.5; color: #004d40;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .log {
+      margin-top: 12px; max-height: 160px; overflow: auto;
+      font-size: 12px; color: #546e7a; background: #fafafa;
+      border: 1px solid #eceff1; border-radius: 8px; padding: 8px 10px;
+    }
+    .log div { padding: 2px 0; border-bottom: 1px dashed #eceff1; }
+    select, button {
+      font: inherit; border-radius: 8px; border: 1px solid #b0bec5;
+      padding: 8px 12px; background: #fff;
+    }
+    button.primary { background: #00897b; border-color: #00897b; color: #fff; cursor: pointer; }
+    button.primary:hover { background: #00695c; }
+    .hint { margin-top: 14px; font-size: 12px; color: #90a4ae; text-align: center; }
+  </style>
+</head>
+<body>
+  <h1>桌宠语音识别桥</h1>
+  <p class="sub">由 Edge 浏览器 Web Speech 驱动 · 中英文可用</p>
+  <div class="card">
+    <div class="row">
+      <div class="dot" id="dot"></div>
+      <div id="status">初始化中…</div>
+      <div style="flex:1"></div>
+      <select id="lang">
+        <option value="zh-CN" selected>中文</option>
+        <option value="en-US">English</option>
+      </select>
+      <button class="primary" id="toggle">停止</button>
+    </div>
+    <div id="live">（等待说话）</div>
+    <div class="log" id="log"></div>
+  </div>
+  <p class="hint">识别结果会 POST 给桌宠 5175；请保持本窗口打开</p>
+  <script>
+    (function () {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const dot = document.getElementById('dot');
+      const statusEl = document.getElementById('status');
+      const live = document.getElementById('live');
+      const logEl = document.getElementById('log');
+      const langSel = document.getElementById('lang');
+      const toggleBtn = document.getElementById('toggle');
+      const params = new URLSearchParams(location.search);
+      if (params.get('lang')) langSel.value = params.get('lang');
+      let rec = null;
+      let listening = false;
+      let ignoreEnd = false;
+      let interim = '';
+
+      function setStatus(state, text) {
+        dot.className = 'dot' + (state === 'on' ? ' on' : state === 'err' ? ' err' : '');
+        statusEl.textContent = text;
+      }
+      function logLine(s) {
+        const d = document.createElement('div');
+        d.textContent = new Date().toLocaleTimeString('zh-CN', { hour12: false }) + ' ' + s;
+        logEl.prepend(d);
+        while (logEl.childElementCount > 30) logEl.removeChild(logEl.lastChild);
+      }
+      async function postFinal(text, lang) {
+        try {
+          const r = await fetch('/api/speech-bridge/final', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, lang, ts: Date.now() }),
+          });
+          logLine('POST ' + r.status + ' · ' + text);
+        } catch (e) {
+          logLine('POST fail: ' + (e && e.message));
+        }
+      }
+      function stop() {
+        if (!rec || !listening) return;
+        ignoreEnd = true;
+        try { rec.stop(); } catch (_) {}
+      }
+      function start() {
+        if (!SR) {
+          setStatus('err', '此浏览器不支持 Web Speech');
+          return;
+        }
+        if (listening) { stop(); return; }
+        rec = new SR();
+        rec.lang = langSel.value;
+        rec.continuous = true;
+        rec.interimResults = true;
+        rec.maxAlternatives = 1;
+        ignoreEnd = false;
+        interim = '';
+        rec.onstart = function () {
+          listening = true;
+          toggleBtn.textContent = '停止';
+          setStatus('on', '正在听（' + rec.lang + '）…');
+        };
+        rec.onresult = function (ev) {
+          let inter = '';
+          let fin = '';
+          for (let i = ev.resultIndex; i < ev.results.length; i++) {
+            const t = ev.results[i][0].transcript;
+            if (ev.results[i].isFinal) fin += t;
+            else inter += t;
+          }
+          if (inter) {
+            interim = inter;
+            live.textContent = interim;
+          }
+          if (fin) {
+            const text = fin.trim();
+            interim = '';
+            live.textContent = text;
+            if (text) postFinal(text, rec.lang);
+          }
+        };
+        rec.onerror = function (ev) {
+          const map = {
+            'not-allowed': '麦克风权限被拒绝',
+            'service-not-allowed': '语音服务不可用',
+            'no-speech': '没有听到语音',
+            network: '网络错误（语音服务连不上）',
+            'audio-capture': '找不到麦克风',
+            'language-not-supported': '不支持该语言',
+          };
+          setStatus('err', map[ev.error] || ('错误: ' + ev.error));
+          logLine('onerror ' + ev.error);
+        };
+        rec.onend = function () {
+          listening = false;
+          if (ignoreEnd) {
+            ignoreEnd = false;
+            setStatus('', '已停止');
+            return;
+          }
+          // Chrome/Edge 常自行结束：自动续听，保证通话常驻
+          setStatus('', '识别结束，自动续听…');
+          setTimeout(function () {
+            if (!ignoreEnd) {
+              try { rec.start(); } catch (e) { logLine('restart fail ' + e); }
+            }
+          }, 200);
+        };
+        try {
+          rec.start();
+        } catch (e) {
+          setStatus('err', '启动失败: ' + e.message);
+        }
+      }
+      toggleBtn.addEventListener('click', function () { start(); });
+      langSel.addEventListener('change', function () {
+        stop();
+        setTimeout(start, 300);
+      });
+      if (!SR) {
+        setStatus('err', '不支持 Web Speech');
+      } else {
+        start();
+      }
+      window.__speechBridge = { start: start, stop: stop };
+    })();
+  </script>
+</body>
+</html>

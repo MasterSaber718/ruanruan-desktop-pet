@@ -1,0 +1,16 @@
+{
+  "status": "error",
+  "plugin": "wechatbot-webhook",
+  "listen": [
+    "主人",
+    "A",
+    "周周"
+  ],
+  "name": "Contact<阮>",
+  "started_at": 1784654939575,
+  "last_error": "wechatbot-webhook 服务未启动或不可达",
+  "last_message": "经测试判定，群聊内消息，无论艾特或不艾特特，返回消息均属于个人并非群聊，检测机制有问题，返回机制也有问题。",
+  "incoming_count": 3,
+  "last_reply": "收到，具体是哪个群聊或场景？我帮你看看是不是权限或配置的问题。",
+  "outgoing_count": 3
+}

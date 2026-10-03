@@ -1,0 +1,18 @@
+{
+  "id": "vmd_js_芝麻凛",
+  "label": "VMD片段:js_芝麻凛",
+  "verbs": [],
+  "steps": [
+    {
+      "action": "vmdClip",
+      "params": {
+        "asset": "js_芝麻凛.motion.json"
+      },
+      "wait": "complete"
+    }
+  ],
+  "author": "vmd-pipeline",
+  "createdAt": 1789714196001,
+  "verified": false,
+  "_pending": "渲染端 vmdClip 播放器未接入（T7 渲染侧）——接入前 hub 校验会拒绝该动作"
+}

@@ -1,0 +1,246 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* 确保滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   移动端适配样式
+   ======================================== */
+
+/* 安全区域 CSS 变量（通过 JS 设置，用于刘海屏/全面屏适配） */
+:root {
+  --sat: 0px;  /* safe-area-inset-top */
+  --sab: 0px;  /* safe-area-inset-bottom */
+  --sal: 0px;  /* safe-area-inset-left */
+  --sar: 0px;  /* safe-area-inset-right */
+}
+
+/* 使用 env() 作为后备 */
+@supports (padding: env(safe-area-inset-top)) {
+  :root {
+    --sat: env(safe-area-inset-top);
+    --sab: env(safe-area-inset-bottom);
+    --sal: env(safe-area-inset-left);
+    --sar: env(safe-area-inset-right);
+  }
+}
+
+/* 移动端全局适配（< 768px） */
+@media (max-width: 767px) and (min-width: 9999px) /* [2026-08-30 App模式封禁] 手机样式块永不命中，回滚改回原条件 */ {
+  html, body {
+    /* 禁止文字自动调整大小 */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* 防止 iOS 弹性滚动 */
+    overscroll-behavior: none;
+    /* 禁止用户选中（App 体验） */
+    -webkit-user-select: none;
+    user-select: none;
+    /* 禁止长按弹出菜单 */
+    -webkit-touch-callout: none;
+  }
+
+  /* 允许输入框和文本区域选中 */
+  input, textarea, [contenteditable] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* 触摸友好的按钮尺寸（最小 44px） */
+  button, .MuiIconButton-root {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* 滚动条隐藏（移动端不需要） */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* 隐藏桌面特有元素 */
+  .desktop-only {
+    display: none !important;
+  }
+
+  /* 移动端可见元素 */
+  .mobile-only {
+    display: block !important;
+  }
+}
+
+/* 桌面端隐藏移动端元素 */
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+/* Capacitor WebView 环境特殊适配
+   [修复 HIGH-7] 原来这里用的是 @media (display-mode: standalone)。
+   该媒体查询只对"已安装的 PWA"为真，Capacitor 的 WebView 并不满足，
+   实测求值恒为 false —— 意味着整段安全区 padding 从未生效过。
+   现改为由 JS 在原生环境下给 <html> 加 .capacitor-native 类来驱动。
+
+   注意：这里刻意不给 body 加 padding。因为各移动端组件（.mobile-chat-container、
+   .mobile-bottom-nav 等）已各自用 var(--sat)/var(--sab) 做了避让，
+   若再给 body 叠一层 padding 会造成双倍留白与底部空隙。
+   此处只负责兜住"未被组件覆盖的通用页面"。 */
+.capacitor-native body {
+  padding-left: var(--sal);
+  padding-right: var(--sar);
+}
+
+/* 移动端输入框样式优化 */
+@media (max-width: 767px) and (min-width: 9999px) /* [2026-08-30 App模式封禁] 手机样式块永不命中，回滚改回原条件 */ {
+  /* 防止 iOS 输入框缩放 */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+
+  /* MUI 组件移动端优化 */
+  .MuiContainer-root {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .MuiPaper-root {
+    border-radius: 12px !important;
+  }
+
+  /* 对话框全屏显示 */
+  .MuiDialog-paper {
+    margin: 8px !important;
+    width: calc(100% - 16px) !important;
+    maxWidth: none !important;
+  }
+}
+
+/* 底部导航栏样式 */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(56px + var(--sab));
+  padding-bottom: var(--sab);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+}
+
+/* 暗色模式底部导航栏
+   [修复 HIGH-5 暗色撕裂] 原来这里用 @media (prefers-color-scheme: dark)，
+   跟随的是"系统"深色设置；而 MUI 主题跟随的是应用内 isDarkMode 状态。
+   两者不同步时会出现：手机开系统深色、应用内是浅色主题 →
+   导航栏被刷成深色，但 MUI 渲染的文字仍是深色 → 文字与背景同色，完全看不清。
+   现统一改为由 <html data-theme="dark"> 驱动，与应用主题严格一致。 */
+html[data-theme='dark'] .mobile-bottom-nav {
+  background: rgba(18, 18, 18, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mobile-bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 56px;
+  min-height: 48px;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.5);
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-bottom-nav-item.active {
+  color: #4f46e5;
+}
+
+/* 移动端聊天界面优化 */
+.mobile-chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh; /* 动态视口高度，适配移动浏览器地址栏 */
+  padding-top: var(--sat);
+}
+
+/* 消息列表底部留白：需避开固定输入栏(~64px) + 底部导航栏(56px) + 安全区 */
+.mobile-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(120px + var(--sab));
+}
+
+/* 输入栏固定在底部导航栏之上（bottom = 导航栏高度 + 安全区），
+   避免与 .mobile-bottom-nav 重叠导致输入框/发送按钮被遮挡（历史缺陷修复） */
+.mobile-chat-input {
+  position: fixed;
+  bottom: calc(56px + var(--sab));
+  left: 0;
+  right: 0;
+  padding: 8px 12px;
+  padding-bottom: calc(8px + var(--sab));
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  z-index: 999;
+}
+
+/* [修复 HIGH-5 暗色撕裂] 同上：改由应用主题驱动，不再跟随系统深色 */
+html[data-theme='dark'] .mobile-chat-input {
+  background: rgba(18, 18, 18, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}

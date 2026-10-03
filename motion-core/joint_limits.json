@@ -1,0 +1,33 @@
+{
+  "_meta": {
+    "name": "joint_limits_v1",
+    "date": "2026-09-08",
+    "purpose": "T2 人味评估门——关节角度极限（来源 JointLimits_ref.cs / 人体解剖学）+ 角速度极限（T2.1 新增 deg/s 列）",
+    "usage": "渲染端运行时限速（T2.2 硬门：本帧角速度超 comfort → clamp 本帧增量=自动拉伸时间轴，不拒绝动作）；hub 端软分/预估共用此表",
+    "rate_model": "comfort=日常动作上限（超过→限速）；hard=生理爆发顶（超过→日志告警，v1 不拦）",
+    "anchors": "任务清单锚点：人扇巴掌 0.2s（肘 ~750°/s 峰值）/ 起身 1s；HPLS skill ω_max=f(Joint,Axis,Direction,Posture,Load,Individual) 只有框架无数值，本表数值=运动科学常识档（日常/爆发），待实测校准",
+    "excluded": "センター/全ての親/IK/捩り 系骨骼不进速度预算（整体朝向旋转与物理补偿骨骼不受关节扭转极限管辖，spin 整机旋转合法）"
+  },
+  "groups": [
+    { "id": "head",    "label": "头颈", "match": ["頭", "head", "首", "neck"],
+      "angleDeg": { "x": 50, "y": 80, "z": 50 },
+      "comfortDegPerSec": 120, "hardDegPerSec": 400 },
+    { "id": "spine",   "label": "脊椎", "match": ["上半身", "upper", "chest", "脊椎", "spine", "下半身", "腰", "waist"],
+      "angleDeg": { "x": 30, "y": 50, "z": 30 },
+      "comfortDegPerSec": 90,  "hardDegPerSec": 300 },
+    { "id": "shoulder","label": "肩",   "match": ["肩", "shoulder"],
+      "angleDeg": { "x": 180, "y": 140, "z": 180 },
+      "comfortDegPerSec": 250, "hardDegPerSec": 700 },
+    { "id": "elbow",   "label": "肘",   "match": ["ひじ", "肘", "elbow", "下腕"],
+      "angleDeg": { "x": 150, "y": 10, "z": 30 },
+      "comfortDegPerSec": 300, "hardDegPerSec": 750 },
+    { "id": "wrist",   "label": "腕",   "match": ["手首", "wrist", "腕"],
+      "angleDeg": { "x": 70, "y": 25, "z": 80 },
+      "comfortDegPerSec": 220, "hardDegPerSec": 500 },
+    { "id": "leg",     "label": "腿足", "match": ["もも", "大腿", "thigh", "すね", "小腿", "knee", "膝", "足首", "ankle", "足", "foot", "leg"],
+      "angleDeg": { "x": 150, "y": 45, "z": 40 },
+      "comfortDegPerSec": 200, "hardDegPerSec": 800 }
+  ],
+  "match_order": ["head", "spine", "shoulder", "elbow", "wrist", "leg"],
+  "match_note": "按 match_order 顺序首个命中生效（肘先于腕：'下腕'=前臂归肘组；'腕'兜底归腕组）"
+}

@@ -1,0 +1,3512 @@
+{
+ "111": {
+  "name": "111",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 10.55,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 270.0,
+    "z": 270.0
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.05,
+    "y": 270.0,
+    "z": 180.0
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.0,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": 0.014,
+    "y": 0.073,
+    "z": 0.008
+   },
+   "LeftArm": {
+    "x": -0.023,
+    "y": 1.274,
+    "z": 0.114
+   },
+   "RightArm": {
+    "x": -0.015,
+    "y": 1.327,
+    "z": 0.086
+   },
+   "LeftLeg": {
+    "x": -0.321,
+    "y": 0.028,
+    "z": -0.08
+   },
+   "RightLeg": {
+    "x": 0.094,
+    "y": 0.035,
+    "z": -0.128
+   },
+   "Body": {
+    "x": -0.035,
+    "y": 1.149,
+    "z": -0.09
+   },
+   "Shoulder": {
+    "x": -0.047,
+    "y": 1.41,
+    "z": -0.132
+   },
+   "Waist": {
+    "x": 0.03,
+    "y": 0.971,
+    "z": -0.083
+   },
+   "LeftArmBend": {
+    "x": -0.934,
+    "y": 0.98,
+    "z": -0.506
+   },
+   "RightArmBend": {
+    "x": 0.748,
+    "y": 0.907,
+    "z": -0.536
+   },
+   "LeftLegBend": {
+    "x": 0.062,
+    "y": 0.546,
+    "z": 1.049
+   },
+   "RightLegBend": {
+    "x": 0.279,
+    "y": 0.531,
+    "z": 1.007
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 47,
+    "Index": 53,
+    "Middle": 48,
+    "Ring": 48,
+    "Little": 45,
+    "Open": 1,
+    "Foot": 42,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 55,
+     "Thumb_02": 85,
+     "Thumb_03": 58,
+     "Index_01": 68,
+     "Index_02": 61,
+     "Index_03": 34,
+     "Middle_01": 77,
+     "Middle_02": 47,
+     "Middle_03": 24,
+     "Ring_01": 79,
+     "Ring_02": 36,
+     "Ring_03": 28,
+     "Little_01": 60,
+     "Little_02": 32,
+     "Little_03": 0,
+     "Open_Thumb": 10,
+     "Open_Index": 0,
+     "Open_Ring": 28,
+     "Open_Little": 19
+    }
+   },
+   "Right": {
+    "Thumb": 36,
+    "Index": 9,
+    "Middle": 65,
+    "Ring": 66,
+    "Little": 68,
+    "Open": 16,
+    "Foot": 43,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 41,
+     "Thumb_02": 99,
+     "Thumb_03": 2,
+     "Index_01": 33,
+     "Index_02": 0,
+     "Index_03": 5,
+     "Middle_01": 65,
+     "Middle_02": 92,
+     "Middle_03": 51,
+     "Ring_01": 65,
+     "Ring_02": 84,
+     "Ring_03": 65,
+     "Little_01": 72,
+     "Little_02": 75,
+     "Little_03": 76,
+     "Open_Thumb": 2,
+     "Open_Index": 2,
+     "Open_Ring": 19,
+     "Open_Little": 25
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 2,
+   "EyeValueA": 0,
+   "EyeValueB": 0,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 3,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 18,
+   "MouthValueA": 0
+  }
+ },
+ "22": {
+  "name": "22",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 10.4,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 270.0,
+    "z": 270.0
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.05,
+    "y": 270.0,
+    "z": 180.0
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.0,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": 0.006,
+    "y": 0.025,
+    "z": -0.018
+   },
+   "LeftArm": {
+    "x": -0.142,
+    "y": 1.17,
+    "z": -0.065
+   },
+   "RightArm": {
+    "x": 0.12,
+    "y": 1.354,
+    "z": 0.266
+   },
+   "LeftLeg": {
+    "x": -0.057,
+    "y": 0.102,
+    "z": -0.264
+   },
+   "RightLeg": {
+    "x": 0.096,
+    "y": 0.108,
+    "z": -0.023
+   },
+   "Body": {
+    "x": 0.012,
+    "y": 1.198,
+    "z": -0.008
+   },
+   "Shoulder": {
+    "x": 0.029,
+    "y": 1.358,
+    "z": 0.052
+   },
+   "Waist": {
+    "x": 0.049,
+    "y": 1.004,
+    "z": -0.086
+   },
+   "LeftArmBend": {
+    "x": -1.058,
+    "y": 1.435,
+    "z": -0.485
+   },
+   "RightArmBend": {
+    "x": 0.646,
+    "y": 0.373,
+    "z": 0.138
+   },
+   "LeftLegBend": {
+    "x": 0.17,
+    "y": 0.53,
+    "z": 1.029
+   },
+   "RightLegBend": {
+    "x": 0.276,
+    "y": 0.531,
+    "z": 1.008
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 24,
+    "Index": 40,
+    "Middle": 56,
+    "Ring": 66,
+    "Little": 69,
+    "Open": 1,
+    "Foot": 41,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 24,
+     "Thumb_02": 24,
+     "Thumb_03": 24,
+     "Index_01": 40,
+     "Index_02": 40,
+     "Index_03": 40,
+     "Middle_01": 56,
+     "Middle_02": 56,
+     "Middle_03": 56,
+     "Ring_01": 66,
+     "Ring_02": 66,
+     "Ring_03": 66,
+     "Little_01": 69,
+     "Little_02": 69,
+     "Little_03": 69,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   },
+   "Right": {
+    "Thumb": 71,
+    "Index": 6,
+    "Middle": 67,
+    "Ring": 71,
+    "Little": 70,
+    "Open": 1,
+    "Foot": 100,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 71,
+     "Thumb_02": 71,
+     "Thumb_03": 71,
+     "Index_01": 6,
+     "Index_02": 6,
+     "Index_03": 6,
+     "Middle_01": 67,
+     "Middle_02": 67,
+     "Middle_03": 67,
+     "Ring_01": 71,
+     "Ring_02": 71,
+     "Ring_03": 71,
+     "Little_01": 70,
+     "Little_02": 70,
+     "Little_03": 70,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 0,
+   "EyeValueA": 0,
+   "EyeValueB": 0,
+   "EyeValueC": 21,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 0,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 19,
+   "MouthValueA": 0
+  }
+ },
+ "333": {
+  "name": "333",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 11.94,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 273.53,
+    "z": 269.95
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.05,
+    "y": 270.0,
+    "z": 180.0
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.0,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": 0.006,
+    "y": -0.062,
+    "z": -0.0
+   },
+   "LeftArm": {
+    "x": -0.137,
+    "y": 1.252,
+    "z": 0.002
+   },
+   "RightArm": {
+    "x": 0.331,
+    "y": 1.119,
+    "z": 0.019
+   },
+   "LeftLeg": {
+    "x": 0.013,
+    "y": 0.179,
+    "z": 0.182
+   },
+   "RightLeg": {
+    "x": 0.23,
+    "y": 0.53,
+    "z": -0.22
+   },
+   "Body": {
+    "x": 0.009,
+    "y": 1.287,
+    "z": -0.007
+   },
+   "Shoulder": {
+    "x": -0.03,
+    "y": 1.488,
+    "z": -0.024
+   },
+   "Waist": {
+    "x": -0.015,
+    "y": 1.067,
+    "z": 0.0
+   },
+   "LeftArmBend": {
+    "x": -0.993,
+    "y": 1.079,
+    "z": -0.415
+   },
+   "RightArmBend": {
+    "x": -0.645,
+    "y": 1.115,
+    "z": -0.681
+   },
+   "LeftLegBend": {
+    "x": -0.086,
+    "y": 0.586,
+    "z": 1.036
+   },
+   "RightLegBend": {
+    "x": -0.143,
+    "y": 0.554,
+    "z": 1.0
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 81,
+    "Index": 99,
+    "Middle": 88,
+    "Ring": 77,
+    "Little": 79,
+    "Open": 53,
+    "Foot": 33,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 81,
+     "Thumb_02": 81,
+     "Thumb_03": 81,
+     "Index_01": 99,
+     "Index_02": 99,
+     "Index_03": 99,
+     "Middle_01": 88,
+     "Middle_02": 88,
+     "Middle_03": 88,
+     "Ring_01": 77,
+     "Ring_02": 77,
+     "Ring_03": 77,
+     "Little_01": 79,
+     "Little_02": 79,
+     "Little_03": 79,
+     "Open_Thumb": 53,
+     "Open_Index": 53,
+     "Open_Ring": 53,
+     "Open_Little": 53
+    }
+   },
+   "Right": {
+    "Thumb": 47,
+    "Index": 18,
+    "Middle": 29,
+    "Ring": 33,
+    "Little": 42,
+    "Open": 30,
+    "Foot": 54,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 47,
+     "Thumb_02": 47,
+     "Thumb_03": 47,
+     "Index_01": 18,
+     "Index_02": 18,
+     "Index_03": 18,
+     "Middle_01": 29,
+     "Middle_02": 29,
+     "Middle_03": 29,
+     "Ring_01": 33,
+     "Ring_02": 33,
+     "Ring_03": 33,
+     "Little_01": 42,
+     "Little_02": 42,
+     "Little_03": 42,
+     "Open_Thumb": 30,
+     "Open_Index": 30,
+     "Open_Ring": 30,
+     "Open_Little": 30
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 0,
+   "EyeValueA": 0,
+   "EyeValueB": 0,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 1,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 19,
+   "MouthValueA": 100
+  }
+ },
+ "444": {
+  "name": "444",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 270.0,
+    "z": 270.0
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.05,
+    "y": 270.0,
+    "z": 180.0
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.0,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": 0.017,
+    "y": 0.02,
+    "z": -0.048
+   },
+   "LeftArm": {
+    "x": -0.099,
+    "y": 0.278,
+    "z": 0.168
+   },
+   "RightArm": {
+    "x": 0.078,
+    "y": 0.278,
+    "z": 0.168
+   },
+   "LeftLeg": {
+    "x": -0.073,
+    "y": 0.032,
+    "z": -0.196
+   },
+   "RightLeg": {
+    "x": 0.053,
+    "y": 0.032,
+    "z": -0.196
+   },
+   "Body": {
+    "x": -0.01,
+    "y": 0.514,
+    "z": -0.013
+   },
+   "Shoulder": {
+    "x": -0.01,
+    "y": 0.686,
+    "z": -0.043
+   },
+   "Waist": {
+    "x": -0.01,
+    "y": 0.278,
+    "z": -0.06
+   },
+   "LeftArmBend": {
+    "x": -0.621,
+    "y": 0.984,
+    "z": -0.926
+   },
+   "RightArmBend": {
+    "x": 0.6,
+    "y": 0.984,
+    "z": -0.926
+   },
+   "LeftLegBend": {
+    "x": -0.052,
+    "y": 0.011,
+    "z": 0.932
+   },
+   "RightLegBend": {
+    "x": 0.031,
+    "y": 0.011,
+    "z": 0.932
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 46,
+    "Index": 21,
+    "Middle": 44,
+    "Ring": 53,
+    "Little": 54,
+    "Open": 2,
+    "Foot": 35,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 46,
+     "Thumb_02": 46,
+     "Thumb_03": 46,
+     "Index_01": 21,
+     "Index_02": 21,
+     "Index_03": 21,
+     "Middle_01": 44,
+     "Middle_02": 44,
+     "Middle_03": 44,
+     "Ring_01": 53,
+     "Ring_02": 53,
+     "Ring_03": 53,
+     "Little_01": 54,
+     "Little_02": 54,
+     "Little_03": 54,
+     "Open_Thumb": 2,
+     "Open_Index": 2,
+     "Open_Ring": 2,
+     "Open_Little": 2
+    }
+   },
+   "Right": {
+    "Thumb": 46,
+    "Index": 21,
+    "Middle": 44,
+    "Ring": 53,
+    "Little": 54,
+    "Open": 2,
+    "Foot": 35,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 46,
+     "Thumb_02": 46,
+     "Thumb_03": 46,
+     "Index_01": 21,
+     "Index_02": 21,
+     "Index_03": 21,
+     "Middle_01": 44,
+     "Middle_02": 44,
+     "Middle_03": 44,
+     "Ring_01": 53,
+     "Ring_02": 53,
+     "Ring_03": 53,
+     "Little_01": 54,
+     "Little_02": 54,
+     "Little_03": 54,
+     "Open_Thumb": 2,
+     "Open_Index": 2,
+     "Open_Ring": 2,
+     "Open_Little": 2
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 0,
+   "EyeValueA": 10,
+   "EyeValueB": 0,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 0,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 1,
+   "MouthValueA": 0
+  }
+ },
+ "Tpose": {
+  "name": "Tpose",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 270.0,
+    "z": 270.0
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.05,
+    "y": 269.55,
+    "z": 180.0
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.45,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": -0.003,
+    "y": 0.056,
+    "z": 0.0
+   },
+   "LeftArm": {
+    "x": -0.605,
+    "y": 1.411,
+    "z": -0.031
+   },
+   "RightArm": {
+    "x": 0.614,
+    "y": 1.411,
+    "z": -0.031
+   },
+   "LeftLeg": {
+    "x": -0.082,
+    "y": 0.075,
+    "z": -0.037
+   },
+   "RightLeg": {
+    "x": 0.09,
+    "y": 0.075,
+    "z": -0.037
+   },
+   "Body": {
+    "x": 0.004,
+    "y": 1.238,
+    "z": -0.003
+   },
+   "Shoulder": {
+    "x": 0.004,
+    "y": 1.409,
+    "z": -0.02
+   },
+   "Waist": {
+    "x": 0.004,
+    "y": 0.985,
+    "z": 0.005
+   },
+   "LeftArmBend": {
+    "x": -0.386,
+    "y": 1.409,
+    "z": -1.031
+   },
+   "RightArmBend": {
+    "x": 0.395,
+    "y": 1.409,
+    "z": -1.031
+   },
+   "LeftLegBend": {
+    "x": -0.081,
+    "y": 0.531,
+    "z": 1.041
+   },
+   "RightLegBend": {
+    "x": 0.09,
+    "y": 0.531,
+    "z": 1.041
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 1,
+    "Index": 1,
+    "Middle": 1,
+    "Ring": 1,
+    "Little": 1,
+    "Open": 1,
+    "Foot": 67,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 1,
+     "Thumb_02": 1,
+     "Thumb_03": 1,
+     "Index_01": 1,
+     "Index_02": 1,
+     "Index_03": 1,
+     "Middle_01": 1,
+     "Middle_02": 1,
+     "Middle_03": 1,
+     "Ring_01": 1,
+     "Ring_02": 1,
+     "Ring_03": 1,
+     "Little_01": 1,
+     "Little_02": 1,
+     "Little_03": 1,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   },
+   "Right": {
+    "Thumb": 1,
+    "Index": 1,
+    "Middle": 1,
+    "Ring": 1,
+    "Little": 1,
+    "Open": 1,
+    "Foot": 67,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 1,
+     "Thumb_02": 1,
+     "Thumb_03": 1,
+     "Index_01": 1,
+     "Index_02": 1,
+     "Index_03": 1,
+     "Middle_01": 1,
+     "Middle_02": 1,
+     "Middle_03": 1,
+     "Ring_01": 1,
+     "Ring_02": 1,
+     "Ring_03": 1,
+     "Little_01": 1,
+     "Little_02": 1,
+     "Little_03": 1,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 0,
+   "EyeValueA": 0,
+   "EyeValueB": 0,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 0,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 0,
+   "MouthValueA": 0
+  }
+ },
+ "Vpose": {
+  "name": "Vpose",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 270.0,
+    "z": 270.0
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.05,
+    "y": 270.0,
+    "z": 180.0
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.0,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": -0.003,
+    "y": 0.053,
+    "z": 0.0
+   },
+   "LeftArm": {
+    "x": -0.387,
+    "y": 0.99,
+    "z": -0.027
+   },
+   "RightArm": {
+    "x": 0.396,
+    "y": 0.99,
+    "z": -0.027
+   },
+   "LeftLeg": {
+    "x": -0.082,
+    "y": 0.075,
+    "z": -0.037
+   },
+   "RightLeg": {
+    "x": 0.09,
+    "y": 0.075,
+    "z": -0.037
+   },
+   "Body": {
+    "x": 0.004,
+    "y": 1.238,
+    "z": -0.003
+   },
+   "Shoulder": {
+    "x": 0.004,
+    "y": 1.409,
+    "z": -0.02
+   },
+   "Waist": {
+    "x": 0.004,
+    "y": 0.985,
+    "z": 0.005
+   },
+   "LeftArmBend": {
+    "x": -0.386,
+    "y": 1.409,
+    "z": -1.031
+   },
+   "RightArmBend": {
+    "x": 0.395,
+    "y": 1.409,
+    "z": -1.031
+   },
+   "LeftLegBend": {
+    "x": -0.081,
+    "y": 0.531,
+    "z": 1.041
+   },
+   "RightLegBend": {
+    "x": 0.09,
+    "y": 0.531,
+    "z": 1.041
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 1,
+    "Index": 1,
+    "Middle": 1,
+    "Ring": 1,
+    "Little": 1,
+    "Open": 1,
+    "Foot": 67,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 1,
+     "Thumb_02": 1,
+     "Thumb_03": 1,
+     "Index_01": 1,
+     "Index_02": 1,
+     "Index_03": 1,
+     "Middle_01": 1,
+     "Middle_02": 1,
+     "Middle_03": 1,
+     "Ring_01": 1,
+     "Ring_02": 1,
+     "Ring_03": 1,
+     "Little_01": 1,
+     "Little_02": 1,
+     "Little_03": 1,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   },
+   "Right": {
+    "Thumb": 1,
+    "Index": 1,
+    "Middle": 1,
+    "Ring": 1,
+    "Little": 1,
+    "Open": 1,
+    "Foot": 67,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 1,
+     "Thumb_02": 1,
+     "Thumb_03": 1,
+     "Index_01": 1,
+     "Index_02": 1,
+     "Index_03": 1,
+     "Middle_01": 1,
+     "Middle_02": 1,
+     "Middle_03": 1,
+     "Ring_01": 1,
+     "Ring_02": 1,
+     "Ring_03": 1,
+     "Little_01": 1,
+     "Little_02": 1,
+     "Little_03": 1,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 0,
+   "EyeValueA": 0,
+   "EyeValueB": 0,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 0,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 0,
+   "MouthValueA": 0
+  }
+ },
+ "Σ╣ûσ╖ºσ¥Éσº┐": {
+  "name": "Σ╣ûσ╖ºσ¥Éσº┐",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 270.0,
+    "z": 270.0
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.05,
+    "y": 270.0,
+    "z": 180.0
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.0,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": 0.017,
+    "y": 0.02,
+    "z": -0.048
+   },
+   "LeftArm": {
+    "x": -0.098,
+    "y": 0.278,
+    "z": 0.168
+   },
+   "RightArm": {
+    "x": 0.078,
+    "y": 0.278,
+    "z": 0.168
+   },
+   "LeftLeg": {
+    "x": -0.073,
+    "y": 0.032,
+    "z": -0.196
+   },
+   "RightLeg": {
+    "x": 0.053,
+    "y": 0.032,
+    "z": -0.196
+   },
+   "Body": {
+    "x": -0.01,
+    "y": 0.514,
+    "z": -0.013
+   },
+   "Shoulder": {
+    "x": -0.01,
+    "y": 0.686,
+    "z": -0.043
+   },
+   "Waist": {
+    "x": -0.01,
+    "y": 0.278,
+    "z": -0.06
+   },
+   "LeftArmBend": {
+    "x": -0.621,
+    "y": 0.984,
+    "z": -0.926
+   },
+   "RightArmBend": {
+    "x": 0.6,
+    "y": 0.984,
+    "z": -0.926
+   },
+   "LeftLegBend": {
+    "x": -0.052,
+    "y": 0.011,
+    "z": 0.932
+   },
+   "RightLegBend": {
+    "x": 0.031,
+    "y": 0.011,
+    "z": 0.932
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 46,
+    "Index": 21,
+    "Middle": 44,
+    "Ring": 53,
+    "Little": 54,
+    "Open": 2,
+    "Foot": 35,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 46,
+     "Thumb_02": 46,
+     "Thumb_03": 46,
+     "Index_01": 21,
+     "Index_02": 21,
+     "Index_03": 21,
+     "Middle_01": 44,
+     "Middle_02": 44,
+     "Middle_03": 44,
+     "Ring_01": 53,
+     "Ring_02": 53,
+     "Ring_03": 53,
+     "Little_01": 54,
+     "Little_02": 54,
+     "Little_03": 54,
+     "Open_Thumb": 2,
+     "Open_Index": 2,
+     "Open_Ring": 2,
+     "Open_Little": 2
+    }
+   },
+   "Right": {
+    "Thumb": 46,
+    "Index": 21,
+    "Middle": 44,
+    "Ring": 53,
+    "Little": 54,
+    "Open": 2,
+    "Foot": 35,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 46,
+     "Thumb_02": 46,
+     "Thumb_03": 46,
+     "Index_01": 21,
+     "Index_02": 21,
+     "Index_03": 21,
+     "Middle_01": 44,
+     "Middle_02": 44,
+     "Middle_03": 44,
+     "Ring_01": 53,
+     "Ring_02": 53,
+     "Ring_03": 53,
+     "Little_01": 54,
+     "Little_02": 54,
+     "Little_03": 54,
+     "Open_Thumb": 2,
+     "Open_Index": 2,
+     "Open_Ring": 2,
+     "Open_Little": 2
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 0,
+   "EyeValueA": 10,
+   "EyeValueB": 0,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 0,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 1,
+   "MouthValueA": 0
+  }
+ },
+ "σÅ»Σ╗ÑΦ╡░Σ║å": {
+  "name": "σÅ»Σ╗ÑΦ╡░Σ║å",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 11.94,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 273.53,
+    "z": 269.95
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.05,
+    "y": 270.0,
+    "z": 180.0
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.0,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": 0.006,
+    "y": -0.016,
+    "z": -0.0
+   },
+   "LeftArm": {
+    "x": -0.144,
+    "y": 1.223,
+    "z": 0.072
+   },
+   "RightArm": {
+    "x": 0.339,
+    "y": 1.246,
+    "z": -0.036
+   },
+   "LeftLeg": {
+    "x": 0.014,
+    "y": 0.152,
+    "z": 0.12
+   },
+   "RightLeg": {
+    "x": -0.051,
+    "y": 0.135,
+    "z": -0.17
+   },
+   "Body": {
+    "x": 0.009,
+    "y": 1.287,
+    "z": -0.007
+   },
+   "Shoulder": {
+    "x": -0.03,
+    "y": 1.488,
+    "z": -0.024
+   },
+   "Waist": {
+    "x": -0.015,
+    "y": 1.067,
+    "z": 0.0
+   },
+   "LeftArmBend": {
+    "x": -1.101,
+    "y": 1.148,
+    "z": 0.132
+   },
+   "RightArmBend": {
+    "x": -0.564,
+    "y": 1.161,
+    "z": -0.784
+   },
+   "LeftLegBend": {
+    "x": -0.086,
+    "y": 0.586,
+    "z": 1.036
+   },
+   "RightLegBend": {
+    "x": 0.086,
+    "y": 0.586,
+    "z": 1.036
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 81,
+    "Index": 99,
+    "Middle": 88,
+    "Ring": 77,
+    "Little": 79,
+    "Open": 53,
+    "Foot": 50,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 81,
+     "Thumb_02": 81,
+     "Thumb_03": 81,
+     "Index_01": 99,
+     "Index_02": 99,
+     "Index_03": 99,
+     "Middle_01": 88,
+     "Middle_02": 88,
+     "Middle_03": 88,
+     "Ring_01": 77,
+     "Ring_02": 77,
+     "Ring_03": 77,
+     "Little_01": 79,
+     "Little_02": 79,
+     "Little_03": 79,
+     "Open_Thumb": 53,
+     "Open_Index": 53,
+     "Open_Ring": 53,
+     "Open_Little": 53
+    }
+   },
+   "Right": {
+    "Thumb": 47,
+    "Index": 18,
+    "Middle": 29,
+    "Ring": 33,
+    "Little": 42,
+    "Open": 30,
+    "Foot": 54,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 47,
+     "Thumb_02": 47,
+     "Thumb_03": 47,
+     "Index_01": 18,
+     "Index_02": 18,
+     "Index_03": 18,
+     "Middle_01": 29,
+     "Middle_02": 29,
+     "Middle_03": 29,
+     "Ring_01": 33,
+     "Ring_02": 33,
+     "Ring_03": 33,
+     "Little_01": 42,
+     "Little_02": 42,
+     "Little_03": 42,
+     "Open_Thumb": 30,
+     "Open_Index": 30,
+     "Open_Ring": 30,
+     "Open_Little": 30
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 4,
+   "EyeValueA": 0,
+   "EyeValueB": 0,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 5,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 12,
+   "MouthValueA": 0
+  }
+ },
+ "σû╡σû╡": {
+  "name": "σû╡σû╡",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 339.96,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 359.98,
+    "y": 244.24,
+    "z": 269.96
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.05,
+    "y": 270.0,
+    "z": 180.0
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.0,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": -0.009,
+    "y": -0.032,
+    "z": -0.0
+   },
+   "LeftArm": {
+    "x": -0.423,
+    "y": 0.889,
+    "z": -0.257
+   },
+   "RightArm": {
+    "x": 0.025,
+    "y": 1.267,
+    "z": 0.412
+   },
+   "LeftLeg": {
+    "x": -0.397,
+    "y": 0.181,
+    "z": -0.499
+   },
+   "RightLeg": {
+    "x": 0.262,
+    "y": 0.161,
+    "z": 0.199
+   },
+   "Body": {
+    "x": -0.104,
+    "y": 1.104,
+    "z": 0.054
+   },
+   "Shoulder": {
+    "x": -0.166,
+    "y": 1.296,
+    "z": 0.062
+   },
+   "Waist": {
+    "x": -0.005,
+    "y": 0.901,
+    "z": -0.01
+   },
+   "LeftArmBend": {
+    "x": 0.422,
+    "y": 0.537,
+    "z": -0.002
+   },
+   "RightArmBend": {
+    "x": 0.893,
+    "y": 0.678,
+    "z": -0.246
+   },
+   "LeftLegBend": {
+    "x": 0.302,
+    "y": 0.453,
+    "z": 0.89
+   },
+   "RightLegBend": {
+    "x": -0.181,
+    "y": 0.492,
+    "z": 0.938
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 16,
+    "Index": 0,
+    "Middle": 0,
+    "Ring": 0,
+    "Little": 0,
+    "Open": 44,
+    "Foot": 76,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 16,
+     "Thumb_02": 16,
+     "Thumb_03": 16,
+     "Index_01": 0,
+     "Index_02": 0,
+     "Index_03": 0,
+     "Middle_01": 0,
+     "Middle_02": 0,
+     "Middle_03": 0,
+     "Ring_01": 0,
+     "Ring_02": 0,
+     "Ring_03": 0,
+     "Little_01": 0,
+     "Little_02": 0,
+     "Little_03": 0,
+     "Open_Thumb": 44,
+     "Open_Index": 44,
+     "Open_Ring": 44,
+     "Open_Little": 44
+    }
+   },
+   "Right": {
+    "Thumb": 58,
+    "Index": 40,
+    "Middle": 37,
+    "Ring": 36,
+    "Little": 38,
+    "Open": 71,
+    "Foot": 55,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 58,
+     "Thumb_02": 58,
+     "Thumb_03": 58,
+     "Index_01": 40,
+     "Index_02": 40,
+     "Index_03": 40,
+     "Middle_01": 37,
+     "Middle_02": 37,
+     "Middle_03": 37,
+     "Ring_01": 36,
+     "Ring_02": 36,
+     "Ring_03": 36,
+     "Little_01": 38,
+     "Little_02": 38,
+     "Little_03": 38,
+     "Open_Thumb": 71,
+     "Open_Index": 71,
+     "Open_Ring": 71,
+     "Open_Little": 71
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 0,
+   "EyeValueA": 0,
+   "EyeValueB": 0,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 1,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 4,
+   "MouthValueA": 100
+  }
+ },
+ "σÑ│Σ╗åµ»öσ┐â": {
+  "name": "σÑ│Σ╗åµ»öσ┐â",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 270.0,
+    "z": 270.0
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.05,
+    "y": 270.0,
+    "z": 180.0
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.0,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": -0.004,
+    "y": 0.04,
+    "z": 0.001
+   },
+   "LeftArm": {
+    "x": -0.074,
+    "y": 1.079,
+    "z": 0.24
+   },
+   "RightArm": {
+    "x": 0.082,
+    "y": 1.079,
+    "z": 0.24
+   },
+   "LeftLeg": {
+    "x": -0.045,
+    "y": 0.094,
+    "z": -0.051
+   },
+   "RightLeg": {
+    "x": 0.054,
+    "y": 0.094,
+    "z": -0.051
+   },
+   "Body": {
+    "x": 0.004,
+    "y": 1.238,
+    "z": -0.003
+   },
+   "Shoulder": {
+    "x": 0.004,
+    "y": 1.409,
+    "z": -0.02
+   },
+   "Waist": {
+    "x": 0.004,
+    "y": 0.985,
+    "z": 0.005
+   },
+   "LeftArmBend": {
+    "x": -0.775,
+    "y": 1.577,
+    "z": -0.81
+   },
+   "RightArmBend": {
+    "x": 0.783,
+    "y": 1.577,
+    "z": -0.81
+   },
+   "LeftLegBend": {
+    "x": 0.107,
+    "y": 0.534,
+    "z": 1.027
+   },
+   "RightLegBend": {
+    "x": -0.099,
+    "y": 0.534,
+    "z": 1.027
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 65,
+    "Index": 16,
+    "Middle": 100,
+    "Ring": 100,
+    "Little": 100,
+    "Open": 1,
+    "Foot": 56,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 65,
+     "Thumb_02": 65,
+     "Thumb_03": 65,
+     "Index_01": 16,
+     "Index_02": 16,
+     "Index_03": 16,
+     "Middle_01": 100,
+     "Middle_02": 100,
+     "Middle_03": 100,
+     "Ring_01": 100,
+     "Ring_02": 100,
+     "Ring_03": 100,
+     "Little_01": 100,
+     "Little_02": 100,
+     "Little_03": 100,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   },
+   "Right": {
+    "Thumb": 65,
+    "Index": 16,
+    "Middle": 100,
+    "Ring": 100,
+    "Little": 100,
+    "Open": 1,
+    "Foot": 56,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 65,
+     "Thumb_02": 65,
+     "Thumb_03": 65,
+     "Index_01": 16,
+     "Index_02": 16,
+     "Index_03": 16,
+     "Middle_01": 100,
+     "Middle_02": 100,
+     "Middle_03": 100,
+     "Ring_01": 100,
+     "Ring_02": 100,
+     "Ring_03": 100,
+     "Little_01": 100,
+     "Little_02": 100,
+     "Little_03": 100,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 0,
+   "EyeValueA": 0,
+   "EyeValueB": 10,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 1,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 4,
+   "MouthValueA": 100
+  }
+ },
+ "σ╛ùµäÅ": {
+  "name": "σ╛ùµäÅ",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 31.0,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 270.0,
+    "z": 270.0
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.05,
+    "y": 270.0,
+    "z": 180.0
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.0,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": 0.014,
+    "y": 0.091,
+    "z": 0.008
+   },
+   "LeftArm": {
+    "x": -0.204,
+    "y": 1.053,
+    "z": 0.011
+   },
+   "RightArm": {
+    "x": 0.139,
+    "y": 1.123,
+    "z": -0.146
+   },
+   "LeftLeg": {
+    "x": -0.329,
+    "y": 0.028,
+    "z": 0.037
+   },
+   "RightLeg": {
+    "x": 0.043,
+    "y": 0.035,
+    "z": -0.153
+   },
+   "Body": {
+    "x": -0.064,
+    "y": 1.149,
+    "z": -0.072
+   },
+   "Shoulder": {
+    "x": -0.091,
+    "y": 1.41,
+    "z": -0.107
+   },
+   "Waist": {
+    "x": -0.001,
+    "y": 0.971,
+    "z": -0.088
+   },
+   "LeftArmBend": {
+    "x": -1.054,
+    "y": 1.696,
+    "z": -0.029
+   },
+   "RightArmBend": {
+    "x": 0.393,
+    "y": 1.967,
+    "z": -0.769
+   },
+   "LeftLegBend": {
+    "x": 0.424,
+    "y": 0.546,
+    "z": 0.962
+   },
+   "RightLegBend": {
+    "x": 0.613,
+    "y": 0.531,
+    "z": 0.846
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 59,
+    "Index": 60,
+    "Middle": 55,
+    "Ring": 48,
+    "Little": 41,
+    "Open": 1,
+    "Foot": 42,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 59,
+     "Thumb_02": 59,
+     "Thumb_03": 59,
+     "Index_01": 60,
+     "Index_02": 60,
+     "Index_03": 60,
+     "Middle_01": 55,
+     "Middle_02": 55,
+     "Middle_03": 55,
+     "Ring_01": 48,
+     "Ring_02": 48,
+     "Ring_03": 48,
+     "Little_01": 41,
+     "Little_02": 41,
+     "Little_03": 41,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   },
+   "Right": {
+    "Thumb": 68,
+    "Index": 72,
+    "Middle": 72,
+    "Ring": 72,
+    "Little": 62,
+    "Open": 1,
+    "Foot": 43,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 68,
+     "Thumb_02": 68,
+     "Thumb_03": 68,
+     "Index_01": 72,
+     "Index_02": 72,
+     "Index_03": 72,
+     "Middle_01": 72,
+     "Middle_02": 72,
+     "Middle_03": 72,
+     "Ring_01": 72,
+     "Ring_02": 72,
+     "Ring_03": 72,
+     "Little_01": 62,
+     "Little_02": 62,
+     "Little_03": 62,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 2,
+   "EyeValueA": 0,
+   "EyeValueB": 0,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 3,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 18,
+   "MouthValueA": 0
+  }
+ },
+ "µû░σ╣┤σ┐½Σ╣É": {
+  "name": "µû░σ╣┤σ┐½Σ╣É",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 270.0,
+    "z": 270.0
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.05,
+    "y": 270.0,
+    "z": 180.0
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.0,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": -0.005,
+    "y": 0.036,
+    "z": 0.0
+   },
+   "LeftArm": {
+    "x": -0.047,
+    "y": 1.271,
+    "z": 0.223
+   },
+   "RightArm": {
+    "x": 0.059,
+    "y": 1.273,
+    "z": 0.223
+   },
+   "LeftLeg": {
+    "x": -0.045,
+    "y": 0.094,
+    "z": -0.051
+   },
+   "RightLeg": {
+    "x": 0.054,
+    "y": 0.094,
+    "z": -0.051
+   },
+   "Body": {
+    "x": 0.004,
+    "y": 1.238,
+    "z": -0.003
+   },
+   "Shoulder": {
+    "x": 0.004,
+    "y": 1.409,
+    "z": -0.02
+   },
+   "Waist": {
+    "x": 0.004,
+    "y": 0.985,
+    "z": 0.005
+   },
+   "LeftArmBend": {
+    "x": -0.6,
+    "y": 1.428,
+    "z": -0.946
+   },
+   "RightArmBend": {
+    "x": 0.608,
+    "y": 1.428,
+    "z": -0.946
+   },
+   "LeftLegBend": {
+    "x": 0.107,
+    "y": 0.534,
+    "z": 1.027
+   },
+   "RightLegBend": {
+    "x": -0.099,
+    "y": 0.534,
+    "z": 1.027
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 47,
+    "Index": 44,
+    "Middle": 43,
+    "Ring": 42,
+    "Little": 36,
+    "Open": 6,
+    "Foot": 51,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 47,
+     "Thumb_02": 47,
+     "Thumb_03": 47,
+     "Index_01": 44,
+     "Index_02": 44,
+     "Index_03": 44,
+     "Middle_01": 43,
+     "Middle_02": 43,
+     "Middle_03": 43,
+     "Ring_01": 42,
+     "Ring_02": 42,
+     "Ring_03": 42,
+     "Little_01": 36,
+     "Little_02": 36,
+     "Little_03": 36,
+     "Open_Thumb": 6,
+     "Open_Index": 6,
+     "Open_Ring": 6,
+     "Open_Little": 6
+    }
+   },
+   "Right": {
+    "Thumb": 90,
+    "Index": 100,
+    "Middle": 100,
+    "Ring": 100,
+    "Little": 100,
+    "Open": 1,
+    "Foot": 45,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 90,
+     "Thumb_02": 90,
+     "Thumb_03": 90,
+     "Index_01": 100,
+     "Index_02": 100,
+     "Index_03": 100,
+     "Middle_01": 100,
+     "Middle_02": 100,
+     "Middle_03": 100,
+     "Ring_01": 100,
+     "Ring_02": 100,
+     "Ring_03": 100,
+     "Little_01": 100,
+     "Little_02": 100,
+     "Little_03": 100,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 0,
+   "EyeValueA": 0,
+   "EyeValueB": 10,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 1,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 4,
+   "MouthValueA": 100
+  }
+ },
+ "ΦÇ╕Φé⌐1": {
+  "name": "ΦÇ╕Φé⌐1",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 270.0,
+    "z": 270.0
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.05,
+    "y": 269.55,
+    "z": 180.0
+   },
+   "shoulder02_R": {
+    "x": 359.97,
+    "y": 114.71,
+    "z": 179.98
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": -0.003,
+    "y": 0.055,
+    "z": 0.0
+   },
+   "LeftArm": {
+    "x": -0.605,
+    "y": 1.411,
+    "z": -0.031
+   },
+   "RightArm": {
+    "x": 0.614,
+    "y": 1.411,
+    "z": -0.031
+   },
+   "LeftLeg": {
+    "x": -0.082,
+    "y": 0.075,
+    "z": -0.037
+   },
+   "RightLeg": {
+    "x": 0.09,
+    "y": 0.075,
+    "z": -0.037
+   },
+   "Body": {
+    "x": 0.004,
+    "y": 1.238,
+    "z": -0.003
+   },
+   "Shoulder": {
+    "x": 0.004,
+    "y": 1.409,
+    "z": -0.02
+   },
+   "Waist": {
+    "x": 0.004,
+    "y": 0.985,
+    "z": 0.005
+   },
+   "LeftArmBend": {
+    "x": -0.386,
+    "y": 1.409,
+    "z": -1.031
+   },
+   "RightArmBend": {
+    "x": 0.395,
+    "y": 1.409,
+    "z": -1.031
+   },
+   "LeftLegBend": {
+    "x": -0.081,
+    "y": 0.531,
+    "z": 1.041
+   },
+   "RightLegBend": {
+    "x": 0.09,
+    "y": 0.531,
+    "z": 1.041
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 1,
+    "Index": 1,
+    "Middle": 1,
+    "Ring": 1,
+    "Little": 1,
+    "Open": 1,
+    "Foot": 67,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 1,
+     "Thumb_02": 1,
+     "Thumb_03": 1,
+     "Index_01": 1,
+     "Index_02": 1,
+     "Index_03": 1,
+     "Middle_01": 1,
+     "Middle_02": 1,
+     "Middle_03": 1,
+     "Ring_01": 1,
+     "Ring_02": 1,
+     "Ring_03": 1,
+     "Little_01": 1,
+     "Little_02": 1,
+     "Little_03": 1,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   },
+   "Right": {
+    "Thumb": 1,
+    "Index": 1,
+    "Middle": 1,
+    "Ring": 1,
+    "Little": 1,
+    "Open": 1,
+    "Foot": 67,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 1,
+     "Thumb_02": 1,
+     "Thumb_03": 1,
+     "Index_01": 1,
+     "Index_02": 1,
+     "Index_03": 1,
+     "Middle_01": 1,
+     "Middle_02": 1,
+     "Middle_03": 1,
+     "Ring_01": 1,
+     "Ring_02": 1,
+     "Ring_03": 1,
+     "Little_01": 1,
+     "Little_02": 1,
+     "Little_03": 1,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 0,
+   "EyeValueA": 0,
+   "EyeValueB": 0,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 0,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 0,
+   "MouthValueA": 0
+  }
+ },
+ "ΦÇ╕Φé⌐2": {
+  "name": "ΦÇ╕Φé⌐2",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 270.0,
+    "z": 270.0
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.04,
+    "y": 245.29,
+    "z": 179.98
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.45,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": -0.003,
+    "y": 0.055,
+    "z": 0.0
+   },
+   "LeftArm": {
+    "x": -0.605,
+    "y": 1.411,
+    "z": -0.031
+   },
+   "RightArm": {
+    "x": 0.614,
+    "y": 1.411,
+    "z": -0.031
+   },
+   "LeftLeg": {
+    "x": -0.082,
+    "y": 0.075,
+    "z": -0.037
+   },
+   "RightLeg": {
+    "x": 0.09,
+    "y": 0.075,
+    "z": -0.037
+   },
+   "Body": {
+    "x": 0.004,
+    "y": 1.238,
+    "z": -0.003
+   },
+   "Shoulder": {
+    "x": 0.004,
+    "y": 1.409,
+    "z": -0.02
+   },
+   "Waist": {
+    "x": 0.004,
+    "y": 0.985,
+    "z": 0.005
+   },
+   "LeftArmBend": {
+    "x": -0.386,
+    "y": 1.409,
+    "z": -1.031
+   },
+   "RightArmBend": {
+    "x": 0.395,
+    "y": 1.409,
+    "z": -1.031
+   },
+   "LeftLegBend": {
+    "x": -0.081,
+    "y": 0.531,
+    "z": 1.041
+   },
+   "RightLegBend": {
+    "x": 0.09,
+    "y": 0.531,
+    "z": 1.041
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 1,
+    "Index": 1,
+    "Middle": 1,
+    "Ring": 1,
+    "Little": 1,
+    "Open": 1,
+    "Foot": 67,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 1,
+     "Thumb_02": 1,
+     "Thumb_03": 1,
+     "Index_01": 1,
+     "Index_02": 1,
+     "Index_03": 1,
+     "Middle_01": 1,
+     "Middle_02": 1,
+     "Middle_03": 1,
+     "Ring_01": 1,
+     "Ring_02": 1,
+     "Ring_03": 1,
+     "Little_01": 1,
+     "Little_02": 1,
+     "Little_03": 1,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   },
+   "Right": {
+    "Thumb": 1,
+    "Index": 1,
+    "Middle": 1,
+    "Ring": 1,
+    "Little": 1,
+    "Open": 1,
+    "Foot": 67,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 1,
+     "Thumb_02": 1,
+     "Thumb_03": 1,
+     "Index_01": 1,
+     "Index_02": 1,
+     "Index_03": 1,
+     "Middle_01": 1,
+     "Middle_02": 1,
+     "Middle_03": 1,
+     "Ring_01": 1,
+     "Ring_02": 1,
+     "Ring_03": 1,
+     "Little_01": 1,
+     "Little_02": 1,
+     "Little_03": 1,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 0,
+   "EyeValueA": 0,
+   "EyeValueB": 0,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 0,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 0,
+   "MouthValueA": 0
+  }
+ },
+ "ΦÇ╕Φé⌐3": {
+  "name": "ΦÇ╕Φé⌐3",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 270.0,
+    "z": 270.0
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.04,
+    "y": 245.29,
+    "z": 179.98
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.45,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": -0.003,
+    "y": 0.055,
+    "z": 0.0
+   },
+   "LeftArm": {
+    "x": -0.605,
+    "y": 1.411,
+    "z": -0.031
+   },
+   "RightArm": {
+    "x": 0.614,
+    "y": 1.411,
+    "z": -0.031
+   },
+   "LeftLeg": {
+    "x": -0.082,
+    "y": 0.075,
+    "z": -0.037
+   },
+   "RightLeg": {
+    "x": 0.09,
+    "y": 0.075,
+    "z": -0.037
+   },
+   "Body": {
+    "x": 0.004,
+    "y": 1.238,
+    "z": -0.003
+   },
+   "Shoulder": {
+    "x": 0.004,
+    "y": 1.409,
+    "z": -0.02
+   },
+   "Waist": {
+    "x": 0.004,
+    "y": 0.985,
+    "z": 0.005
+   },
+   "LeftArmBend": {
+    "x": -0.386,
+    "y": 1.409,
+    "z": -1.031
+   },
+   "RightArmBend": {
+    "x": 0.395,
+    "y": 1.409,
+    "z": -1.031
+   },
+   "LeftLegBend": {
+    "x": -0.081,
+    "y": 0.531,
+    "z": 1.041
+   },
+   "RightLegBend": {
+    "x": 0.09,
+    "y": 0.531,
+    "z": 1.041
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 1,
+    "Index": 1,
+    "Middle": 1,
+    "Ring": 1,
+    "Little": 1,
+    "Open": 1,
+    "Foot": 67,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 1,
+     "Thumb_02": 1,
+     "Thumb_03": 1,
+     "Index_01": 1,
+     "Index_02": 1,
+     "Index_03": 1,
+     "Middle_01": 1,
+     "Middle_02": 1,
+     "Middle_03": 1,
+     "Ring_01": 1,
+     "Ring_02": 1,
+     "Ring_03": 1,
+     "Little_01": 1,
+     "Little_02": 1,
+     "Little_03": 1,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   },
+   "Right": {
+    "Thumb": 1,
+    "Index": 1,
+    "Middle": 1,
+    "Ring": 1,
+    "Little": 1,
+    "Open": 1,
+    "Foot": 67,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 1,
+     "Thumb_02": 1,
+     "Thumb_03": 1,
+     "Index_01": 1,
+     "Index_02": 1,
+     "Index_03": 1,
+     "Middle_01": 1,
+     "Middle_02": 1,
+     "Middle_03": 1,
+     "Ring_01": 1,
+     "Ring_02": 1,
+     "Ring_03": 1,
+     "Little_01": 1,
+     "Little_02": 1,
+     "Little_03": 1,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 0,
+   "EyeValueA": 0,
+   "EyeValueB": 0,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 0,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 0,
+   "MouthValueA": 0
+  }
+ },
+ "ΦÇ╕Φé⌐TPOSE": {
+  "name": "ΦÇ╕Φé⌐TPOSE",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 270.0,
+    "z": 270.0
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.04,
+    "y": 235.37,
+    "z": 179.97
+   },
+   "shoulder02_R": {
+    "x": 359.97,
+    "y": 124.63,
+    "z": 179.98
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": -0.003,
+    "y": 0.055,
+    "z": 0.0
+   },
+   "LeftArm": {
+    "x": -0.605,
+    "y": 1.411,
+    "z": -0.031
+   },
+   "RightArm": {
+    "x": 0.614,
+    "y": 1.411,
+    "z": -0.031
+   },
+   "LeftLeg": {
+    "x": -0.082,
+    "y": 0.075,
+    "z": -0.037
+   },
+   "RightLeg": {
+    "x": 0.09,
+    "y": 0.075,
+    "z": -0.037
+   },
+   "Body": {
+    "x": 0.004,
+    "y": 1.238,
+    "z": -0.003
+   },
+   "Shoulder": {
+    "x": 0.004,
+    "y": 1.409,
+    "z": -0.02
+   },
+   "Waist": {
+    "x": 0.004,
+    "y": 0.985,
+    "z": 0.005
+   },
+   "LeftArmBend": {
+    "x": -0.386,
+    "y": 1.409,
+    "z": -1.031
+   },
+   "RightArmBend": {
+    "x": 0.395,
+    "y": 1.409,
+    "z": -1.031
+   },
+   "LeftLegBend": {
+    "x": -0.081,
+    "y": 0.531,
+    "z": 1.041
+   },
+   "RightLegBend": {
+    "x": 0.09,
+    "y": 0.531,
+    "z": 1.041
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 1,
+    "Index": 1,
+    "Middle": 1,
+    "Ring": 1,
+    "Little": 1,
+    "Open": 1,
+    "Foot": 67,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 1,
+     "Thumb_02": 1,
+     "Thumb_03": 1,
+     "Index_01": 1,
+     "Index_02": 1,
+     "Index_03": 1,
+     "Middle_01": 1,
+     "Middle_02": 1,
+     "Middle_03": 1,
+     "Ring_01": 1,
+     "Ring_02": 1,
+     "Ring_03": 1,
+     "Little_01": 1,
+     "Little_02": 1,
+     "Little_03": 1,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   },
+   "Right": {
+    "Thumb": 1,
+    "Index": 1,
+    "Middle": 1,
+    "Ring": 1,
+    "Little": 1,
+    "Open": 1,
+    "Foot": 67,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 1,
+     "Thumb_02": 1,
+     "Thumb_03": 1,
+     "Index_01": 1,
+     "Index_02": 1,
+     "Index_03": 1,
+     "Middle_01": 1,
+     "Middle_02": 1,
+     "Middle_03": 1,
+     "Ring_01": 1,
+     "Ring_02": 1,
+     "Ring_03": 1,
+     "Little_01": 1,
+     "Little_02": 1,
+     "Little_03": 1,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 0,
+   "EyeValueA": 0,
+   "EyeValueB": 0,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 0,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 0,
+   "MouthValueA": 0
+  }
+ },
+ "Φ░âτÜ«": {
+  "name": "Φ░âτÜ«",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 10.4,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 270.0,
+    "z": 270.0
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.05,
+    "y": 270.0,
+    "z": 180.0
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.0,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": 0.006,
+    "y": 0.025,
+    "z": -0.018
+   },
+   "LeftArm": {
+    "x": -0.142,
+    "y": 1.17,
+    "z": -0.065
+   },
+   "RightArm": {
+    "x": 0.12,
+    "y": 1.354,
+    "z": 0.266
+   },
+   "LeftLeg": {
+    "x": -0.057,
+    "y": 0.102,
+    "z": -0.264
+   },
+   "RightLeg": {
+    "x": 0.096,
+    "y": 0.108,
+    "z": -0.023
+   },
+   "Body": {
+    "x": 0.012,
+    "y": 1.198,
+    "z": -0.008
+   },
+   "Shoulder": {
+    "x": 0.029,
+    "y": 1.358,
+    "z": 0.052
+   },
+   "Waist": {
+    "x": 0.049,
+    "y": 1.004,
+    "z": -0.086
+   },
+   "LeftArmBend": {
+    "x": -1.058,
+    "y": 1.435,
+    "z": -0.485
+   },
+   "RightArmBend": {
+    "x": 0.646,
+    "y": 0.373,
+    "z": 0.138
+   },
+   "LeftLegBend": {
+    "x": 0.17,
+    "y": 0.53,
+    "z": 1.029
+   },
+   "RightLegBend": {
+    "x": 0.276,
+    "y": 0.531,
+    "z": 1.008
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 24,
+    "Index": 40,
+    "Middle": 56,
+    "Ring": 66,
+    "Little": 69,
+    "Open": 1,
+    "Foot": 41,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 24,
+     "Thumb_02": 24,
+     "Thumb_03": 24,
+     "Index_01": 40,
+     "Index_02": 40,
+     "Index_03": 40,
+     "Middle_01": 56,
+     "Middle_02": 56,
+     "Middle_03": 56,
+     "Ring_01": 66,
+     "Ring_02": 66,
+     "Ring_03": 66,
+     "Little_01": 69,
+     "Little_02": 69,
+     "Little_03": 69,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   },
+   "Right": {
+    "Thumb": 71,
+    "Index": 6,
+    "Middle": 67,
+    "Ring": 71,
+    "Little": 70,
+    "Open": 1,
+    "Foot": 50,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 71,
+     "Thumb_02": 71,
+     "Thumb_03": 71,
+     "Index_01": 6,
+     "Index_02": 6,
+     "Index_03": 6,
+     "Middle_01": 67,
+     "Middle_02": 67,
+     "Middle_03": 67,
+     "Ring_01": 71,
+     "Ring_02": 71,
+     "Ring_03": 71,
+     "Little_01": 70,
+     "Little_02": 70,
+     "Little_03": 70,
+     "Open_Thumb": 1,
+     "Open_Index": 1,
+     "Open_Ring": 1,
+     "Open_Little": 1
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 0,
+   "EyeValueA": 0,
+   "EyeValueB": 0,
+   "EyeValueC": 21,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 0,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 19,
+   "MouthValueA": 0
+  }
+ },
+ "Φ░âτÜ«ΘéÇΦ»╖": {
+  "name": "Φ░âτÜ«ΘéÇΦ»╖",
+  "source": "apk_pose",
+  "format": "Pose_2.2_simplified",
+  "version": "Pose_2.2",
+  "bones": {
+   "root": {
+    "x": 270.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "Shoulder_Effector": {
+    "x": 0.0,
+    "y": 11.94,
+    "z": 0.0
+   },
+   "Waist_Effector": {
+    "x": 0.0,
+    "y": 273.53,
+    "z": 269.95
+   },
+   "hand_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "hand_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_L": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "foot_R": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "head": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "shoulder02_L": {
+    "x": 0.05,
+    "y": 270.0,
+    "z": 180.0
+   },
+   "shoulder02_R": {
+    "x": 359.96,
+    "y": 90.0,
+    "z": 180.0
+   }
+  },
+  "effectors": {
+   "Whole": {
+    "x": 0.006,
+    "y": -0.062,
+    "z": -0.0
+   },
+   "LeftArm": {
+    "x": -0.137,
+    "y": 1.252,
+    "z": 0.002
+   },
+   "RightArm": {
+    "x": 0.332,
+    "y": 1.119,
+    "z": 0.019
+   },
+   "LeftLeg": {
+    "x": 0.013,
+    "y": 0.178,
+    "z": 0.182
+   },
+   "RightLeg": {
+    "x": 0.23,
+    "y": 0.53,
+    "z": -0.22
+   },
+   "Body": {
+    "x": 0.009,
+    "y": 1.287,
+    "z": -0.007
+   },
+   "Shoulder": {
+    "x": -0.03,
+    "y": 1.488,
+    "z": -0.024
+   },
+   "Waist": {
+    "x": -0.015,
+    "y": 1.067,
+    "z": 0.0
+   },
+   "LeftArmBend": {
+    "x": -0.993,
+    "y": 1.079,
+    "z": -0.415
+   },
+   "RightArmBend": {
+    "x": -0.645,
+    "y": 1.115,
+    "z": -0.681
+   },
+   "LeftLegBend": {
+    "x": -0.086,
+    "y": 0.586,
+    "z": 1.036
+   },
+   "RightLegBend": {
+    "x": -0.143,
+    "y": 0.554,
+    "z": 1.0
+   }
+  },
+  "hands": {
+   "Left": {
+    "Thumb": 81,
+    "Index": 99,
+    "Middle": 88,
+    "Ring": 77,
+    "Little": 79,
+    "Open": 53,
+    "Foot": 33,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 81,
+     "Thumb_02": 81,
+     "Thumb_03": 81,
+     "Index_01": 99,
+     "Index_02": 99,
+     "Index_03": 99,
+     "Middle_01": 88,
+     "Middle_02": 88,
+     "Middle_03": 88,
+     "Ring_01": 77,
+     "Ring_02": 77,
+     "Ring_03": 77,
+     "Little_01": 79,
+     "Little_02": 79,
+     "Little_03": 79,
+     "Open_Thumb": 53,
+     "Open_Index": 53,
+     "Open_Ring": 53,
+     "Open_Little": 53
+    }
+   },
+   "Right": {
+    "Thumb": 47,
+    "Index": 18,
+    "Middle": 29,
+    "Ring": 33,
+    "Little": 42,
+    "Open": 30,
+    "Foot": 54,
+    "advanceData": {
+     "mark": 1,
+     "Thumb_01": 47,
+     "Thumb_02": 47,
+     "Thumb_03": 47,
+     "Index_01": 18,
+     "Index_02": 18,
+     "Index_03": 18,
+     "Middle_01": 29,
+     "Middle_02": 29,
+     "Middle_03": 29,
+     "Ring_01": 33,
+     "Ring_02": 33,
+     "Ring_03": 33,
+     "Little_01": 42,
+     "Little_02": 42,
+     "Little_03": 42,
+     "Open_Thumb": 30,
+     "Open_Index": 30,
+     "Open_Ring": 30,
+     "Open_Little": 30
+    }
+   }
+  },
+  "expression": {
+   "EyeExpressionType": 0,
+   "EyeValueA": 0,
+   "EyeValueB": 0,
+   "EyeValueC": 0,
+   "EyeValueD": 0,
+   "EyeBrowExpressionType": 1,
+   "EyeBrowValueA": 100,
+   "MouthExpressionType": 19,
+   "MouthValueA": 100
+  }
+ }
+}

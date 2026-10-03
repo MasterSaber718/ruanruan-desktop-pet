@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>阮琳云 · 活动作操控台（V3 协议演示）</title>
+<style>
+  html,body{margin:0;height:100%;background:#0b0d13;color:#cfd6e6;font-family:Consolas,"Microsoft YaHei",monospace;overflow:hidden}
+  #bar{position:fixed;left:0;top:0;right:0;padding:6px 12px;background:rgba(10,12,20,.82);font-size:12px;z-index:9;border-bottom:1px solid #262b3a}
+  #hub{color:#31d0aa} #st{color:#ffb84d} canvas{width:100vw;height:100vh;display:block}
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "@babylonjs/core/": "/vendor/@babylonjs/core/",
+    "@babylonjs/materials/": "/vendor/@babylonjs/materials/",
+    "@babylonjs/gui/": "/vendor/@babylonjs/gui/",
+    "babylon-mmd/esm/": "/vendor/babylon-mmd/"
+  }
+}
+</script>
+<script>window.__bootError=null;window.addEventListener('error',e=>{window.__bootError=String(e.message||e)});window.addEventListener('unhandledrejection',e=>{window.__bootError='REJECTION: '+String((e.reason&&e.reason.message)||e.reason)});</script>
+</head>
+<body>
+<div id="bar">hub:<span id="hub">…</span> · state:<span id="st">-</span> · action:<span id="act">-</span> · <span id="note">准备中</span></div>
+<canvas id="cv"></canvas>
+
+<script type="module">
+const MODEL_DIR = '/models/mint/薄荷宿舍/';
+const MODEL_FILE = '薄荷宿舍.pmx';
+const D2R = Math.PI / 180;
+const clamp = (v,l)=>Math.max(-l,Math.min(l,v));
+
+function report(msg){ try{ document.getElementById('note').textContent = msg; }catch{} }
+
+async function boot(){
+  // [2026-08-27 A1 终极修复] 弃用 barrel(index.js)：其内部以 './Loading/sceneLoader.js'
+  //   显式扩展名解析，而 babylon-mmd 内部全是无扩展名深路径 import，两套 URL 在浏览器
+  //   形成双实例（CDP 实测 sameGranular=false, 301 无法收敛），PmxLoader 注册进影子实例
+  //   → "Unable to find a plugin to load .pmx" → 默认 JSON 解析器 → failed JSON parse。
+  //   本页所有 core 导入改为与 babylon-mmd 内部完全一致的 granular 无扩展名 specifier，
+  //   保证整页只有一套模块 URL ⇒ PmxLoader 注册落到页面正在使用的 SceneLoader 上。
+  const [engM, scM, mvM, mcM, camM, heM, diM, slM] = await Promise.all([
+    import('@babylonjs/core/Engines/engine'),
+    import('@babylonjs/core/scene'),
+    import('@babylonjs/core/Maths/math.vector'),
+    import('@babylonjs/core/Maths/math.color'),
+    import('@babylonjs/core/Cameras/freeCamera'),
+    import('@babylonjs/core/Lights/hemisphericLight'),
+    import('@babylonjs/core/Lights/directionalLight'),
+    import('@babylonjs/core/Loading/sceneLoader'),
+  ]);
+  const Engine=engM.Engine, Scene=scM.Scene, Vector3=mvM.Vector3, Quaternion=mvM.Quaternion,
+        Color4=mcM.Color4, FreeCamera=camM.FreeCamera,
+        HemisphericLight=heM.HemisphericLight, DirectionalLight=diM.DirectionalLight,
+        SceneLoader=slM.SceneLoader;
+
+  await import('/vendor/babylon-mmd/Loader/pmxLoader.js');
+  await import("/vendor/babylon-mmd/Loader/mmdModelLoader.default.js");  // SharedMaterialBuilder 初始化（缺这个=全黑） // 显式注册 .pmx 插件（与其内部 import URL 空间一致，单实例生效）
+
+  const engine = new Engine(document.getElementById('cv'), true);
+  const scene = new Scene(engine);
+  scene.clearColor = new Color4(0.05,0.07,0.1,1);
+  const cam = new FreeCamera('cam', new Vector3(0,1.15,-2.3));
+  new HemisphericLight('h', new Vector3(0,1,0), scene).intensity = 0.95;
+  const dl = new DirectionalLight('d', new Vector3(-0.35,-1,0.55), scene); dl.intensity = 1.15;
+
+  let skel=null, boneMap={}, hasModel=false;
+  window.__babylonScene = scene;
+  let target={action:'idle',params:{},reqId:null};
+  let smooth={};
+  const samples=[];
+
+  function setRot(name,x,y,z){
+    const b=boneMap[name]; if(!b||!b.rotationQuaternion&&!b.rotation&&!b._browserAware) {}
+    if(!b) return;
+    x=clamp(x,60); y=clamp(y,90); z=clamp(z,140);
+    b.rotationQuaternion = Quaternion.FromEulerAngles(x*D2R,y*D2R,z*D2R);
+  }
+
+  const loadP = SceneLoader.ImportMeshAsync('', MODEL_DIR, MODEL_FILE, scene).then(r=>{
+    const m = r.meshes.find(mm=>mm.skeleton) || r.meshes[0];
+    skel = m.skeleton; hasModel = true;
+    for(const k of ['センター','上半身','首','頭','右腕','左腕','右ひじ','左ひじ'])
+      boneMap[k] = skel.bones.find(b=>b.name===k) || null;
+    report('模型已导入并受控: 薄荷宿舍 | 骨骼 '+skel.bones.length+' | 活动作驱动中');
+    return r; // [2026-08-27 A1 收尾] 补 return：原断链导致后续 then 收到 undefined→list.meshes 抛错
+    try{
+      const bb=m.getHierarchyBoundingVectors(); const h=bb.max.y-bb.min.y;
+      cam.position.set(0, bb.min.y+h*0.72, -(h*1.65));
+      cam.setTarget(new Vector3(0, bb.min.y+h*0.62, 0));
+    }catch{}
+  });
+
+  // ---------------- ALIVE 控制器（每帧实时计算） ----------------
+  const t0 = performance.now();
+  scene.onBeforeRenderObservable.add(()=>{
+    const t=(performance.now()-t0)/1000;
+    for(const k of Object.keys(target.params)){
+      const v=target.params[k];
+      if(typeof v==='number') smooth[k]=(smooth[k]??v)+(v-(smooth[k]??v))*0.06;
+      else smooth[k]=v;
+    }
+    const p=smooth,a=target.action;
+
+    let chestX=2.0*Math.sin(t*1.85)+0.6*Math.sin(t*0.47);
+    let headY=4.2*Math.sin(t*0.55)+1.8*Math.sin(t*0.23+1.7);
+    let headX=1.6*Math.sin(t*1.25+0.5);
+    let armR=-16-4*Math.sin(t*0.8), armL=-16-4*Math.sin(t*0.8+0.5);
+    let elbR=-14-5*Math.sin(t*1.05+0.6), elbL=-14-5*Math.sin(t*1.05);
+    let rootY=0;
+
+    if(a==='wave'){
+      armR=-(38+62*(p.amplitude??0.7));
+      elbR=-((45+30*(p.amplitude??0.7))*Math.abs(Math.sin(t*Math.PI*(p.freq??2)))+10);
+      headY+=7*Math.sin(t*0.9);
+    }else if(a==='nod'){ headX+=(p.angle??18)*Math.sin(t*Math.PI*2*(p.count??1)*1.5); }
+    else if(a==='shake'){ headY+=(p.angle??25)*Math.sin(t*Math.PI*2*(p.count??2)*1.15); }
+    else if(a==='turnHead'){ headY+=(p.angle??30)*0.92; }
+    else if(a==='turnBody'){ chestX*=0.6; headY+=(p.angle??45)*0.5; }
+    else if(a==='jump'){
+      const ph=(t/(p.duration??1.2))%1;
+      rootY=Math.sin(Math.PI*ph)*(p.height??0.3)*(p.power==='strong'?1.2:p.power==='soft'?0.75:1);
+      elbR-=20*Math.sin(ph*Math.PI); armR+=10*Math.sin(ph*Math.PI);
+    }else if(a==='stretch'){
+      armR=armL=-(96+14*Math.sin(t*2)); headX-=4*Math.sin(t*2.1);
+    }else if(a==='squat'){
+      rootY=-Math.abs(Math.sin(t*1.6))*(p.depth??0.6)*0.28; chestX+=10*Math.abs(Math.sin(t*1.6));
+    }
+
+    if(skel){
+      setRot('上半身',chestX,0,0);
+      setRot('首',0,headY*0.42,0);
+      setRot('頭',headX,headY,0);
+      setRot('右腕',0,0,armR);
+      setRot('左腕',0,0,armL);
+      setRot('右ひじ',elbR,0,0);
+      setRot('左ひじ',elbL,0,0);
+    }
+    meshRootY = rootY;
+  });
+
+  let meshRef=null; let meshRootY=0;
+  loadP.then(list=>{ meshRef = list.meshes.find(m=>m.skeleton)||list.meshes[0]; });
+
+  scene.onBeforeRenderObservable.add(()=>{
+    if(meshRef && meshRootY!==undefined && Math.abs((meshRef.position.y||0)-meshRootY)>1e-6)
+      meshRef.position.y += (meshRootY-(meshRef.position.y||0))*0.35;
+  });
+
+  engine.runRenderLoop(()=>scene.render());
+
+  // ---------------- 调试探针（协议驱动 + 活动性证据） ----------------
+  window.__motionDebug={
+    get info(){return {hasModel, bones:skel?skel.bones.length:0,
+      mapping:Object.fromEntries(Object.entries(boneMap).map(([k,v])=>[k,!!v]))}},
+    get sampleCount(){return samples.length},
+    get lastSample(){return samples[samples.length-1]||null},
+    get distinctActions(){return [...new Set(samples.map(s=>s.action))]},
+    setTarget(action,params){ target={action,params:params||{},reqId:'manual'}; return true },
+    now(){return {state:target.action,params:target.params,reqId:target.reqId}},
+    hubApply(action, reqId){ target={action,params:{},reqId}; return true }
+  };
+
+  engine.resize();
+}
+
+// ---------------- 订阅 motion-hub（280ms 轮询） ----------------
+async function pollHub(){
+  try{
+    const d=await (await fetch('/hub/state',{cache:'no-store'})).json();
+    document.getElementById('hub').textContent='online';
+    document.getElementById('st').textContent=d.state;
+    document.getElementById('act').textContent=d.currentAction||'idle';
+    const md = window.__motionDebug;
+    if(d.state==='solving' && d.currentAction){
+      if(md.now().reqId !== d.currentReqId){
+        md.hubApply(d.currentAction, d.currentReqId);
+        report('执行协议指令: '+d.currentAction);
+      }
+    } else if(d.state==='idle'){
+      if(md.now().state!=='idle'){
+        md.setTarget('idle',{});
+        report('回 idle（自然收敛）');
+      }
+    }
+  }catch(e){ document.getElementById('hub').textContent='offline: '+e.message; }
+  setTimeout(pollHub,280);
+}
+
+boot().catch(e=>{
+  window.__bootError=(window.__bootError||'')+' BOOT: '+String((e&&e.message)||e);
+  report(window.__bootError);
+});
+pollHub();
+</script>
+</body>
+</html>

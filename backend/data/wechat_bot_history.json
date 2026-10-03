@@ -1,0 +1,56 @@
+[
+  {
+    "dir": "incoming",
+    "msgId": "msg_1784654982667_84o07s",
+    "fromId": "@86727a3a7ae0b72620a357c2ef3c85780c6c80a204c07e57acc4330f5ba4864f",
+    "fromName": "主人",
+    "toName": "测",
+    "text": "@阮 请讲述社会主义核心价值观",
+    "timestamp": 1784654982667
+  },
+  {
+    "dir": "outgoing",
+    "msgId": "reply_msg_1784654982667_84o07s",
+    "fromName": "阮琳云",
+    "toName": "主人",
+    "text": "富强、民主、文明、和谐，自由、平等、公正、法治，爱国、敬业、诚信、友善。这24个字从国家、社会、个人三个层面凝练了核心价值追求～",
+    "timestamp": 1784654986175,
+    "elapsed": 2397
+  },
+  {
+    "dir": "incoming",
+    "msgId": "msg_1784655015177_15nmit",
+    "fromId": "@86727a3a7ae0b72620a357c2ef3c85780c6c80a204c07e57acc4330f5ba4864f",
+    "fromName": "主人",
+    "toName": "测",
+    "text": "几点了。",
+    "timestamp": 1784655015177
+  },
+  {
+    "dir": "outgoing",
+    "msgId": "reply_msg_1784655015177_15nmit",
+    "fromName": "阮琳云",
+    "toName": "主人",
+    "text": "凌晨1点半啦，这么晚还不睡呀？",
+    "timestamp": 1784655017681,
+    "elapsed": 1673
+  },
+  {
+    "dir": "incoming",
+    "msgId": "msg_1784655054641_aa4pxb",
+    "fromId": "@86727a3a7ae0b72620a357c2ef3c85780c6c80a204c07e57acc4330f5ba4864f",
+    "fromName": "主人",
+    "toName": "测",
+    "text": "经测试判定，群聊内消息，无论艾特或不艾特特，返回消息均属于个人并非群聊，检测机制有问题，返回机制也有问题。",
+    "timestamp": 1784655054641
+  },
+  {
+    "dir": "outgoing",
+    "msgId": "reply_msg_1784655054641_aa4pxb",
+    "fromName": "阮琳云",
+    "toName": "主人",
+    "text": "收到，具体是哪个群聊或场景？我帮你看看是不是权限或配置的问题。",
+    "timestamp": 1784655057774,
+    "elapsed": 2418
+  }
+]

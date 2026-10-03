@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>语音识别服务</title>
+  <style>
+    body { font-family: "Segoe UI","Microsoft YaHei",sans-serif; background:#f3f7f6; color:#263238; margin:0; padding:10px; font-size:12px; }
+    .st { font-weight:600; color:#00695c; }
+    .err { color:#c62828; }
+  </style>
+</head>
+<body>
+  <div class="st" id="st">识别服务启动中…</div>
+  <div id="live" style="margin-top:6px;min-height:28px;color:#004d40;"></div>
+  <script>
+    (function () {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      // [v185] 看门狗状态：interim 固化 + 会话轮换 + 分类重启
+      var interimSince = 0, lastInterimLen = 0, sessionStartedAt = 0, recRestartDelay = 180;
+      const st = document.getElementById('st');
+      const live = document.getElementById('live');
+      const params = new URLSearchParams(location.search);
+      let lang = params.get('lang') || 'zh-CN';
+      let rec = null;
+      let listening = false;
+      let ignoreEnd = false;
+      let wantListen = false;
+      let micOk = false;
+      let lastErr = '';
+      let interim = '';
+
+      function setSt(s, isErr) {
+        st.textContent = s;
+        st.className = isErr ? 'err' : 'st';
+      }
+
+      async function postStatus(extra) {
+        try {
+          await fetch('/api/speech-bridge/status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              listening,
+              micOk,
+              error: lastErr,
+              lang,
+              ts: Date.now(),
+              ...(extra || {}),
+            }),
+          });
+        } catch (_) {}
+      }
+
+      async function fetchControl() {
+        try {
+          const r = await fetch('/api/speech-bridge/control', { cache: 'no-store' });
+          if (!r.ok) return null;
+          return await r.json();
+        } catch { return null; }
+      }
+
+      async function postFinal(text) {
+        try {
+          const r = await fetch('/api/speech-bridge/final', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, lang, ts: Date.now() }),
+          });
+          const j = await r.json().catch(function () { return {}; });
+          if (j && j.ignored) return;
+        } catch (_) {}
+      }
+
+      // [v176] 实时中间结果上报 —— 让前端"边说边出字"，而不是等整句定稿才蹦出来。
+      //   节流 200ms；空串 = 清除临时段（定稿/停止时发一次）。相同内容不重复发。
+      var lastInterimPost = 0;
+      var lastInterimText = null;
+      function postInterim(text) {
+        var now = Date.now();
+        if (text && now - lastInterimPost < 200) return;   // 节流（只约束非空文本）
+        if (text === lastInterimText) return;              // 没变化就不发
+        lastInterimText = text;
+        lastInterimPost = now;
+        try {
+          fetch('/api/speech-bridge/interim', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: text, ts: now }),
+          }).catch(function () {});
+        } catch (_) {}
+      }
+
+      // [v108] 先拿到麦克风：否则系统无录音指示，Web Speech 也可能静默失败
+      async function ensureMic() {
+        if (micOk) return true;
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: true, noiseSuppression: true },
+          });
+          // 立刻释放——真正采集由 SpeechRecognition 内部完成；这里只为授权+指示灯
+          stream.getTracks().forEach(function (t) { t.stop(); });
+          micOk = true;
+          lastErr = '';
+          await postStatus({ phase: 'mic-ok' });
+          return true;
+        } catch (e) {
+          micOk = false;
+          lastErr = 'mic: ' + (e && e.name ? e.name + ' ' + e.message : String(e));
+          setSt('麦克风不可用：' + lastErr, true);
+          await postStatus({ phase: 'mic-fail' });
+          return false;
+        }
+      }
+
+      function stopRec() {
+        if (!rec || !listening) return;
+        ignoreEnd = true;
+        try { rec.stop(); } catch (_) {}
+      }
+
+      async function startRec() {
+        if (!SR) { setSt('此环境不支持 Web Speech', true); lastErr = 'no-sr'; await postStatus(); return; }
+        if (listening || rec) return;
+        const ok = await ensureMic();
+        if (!ok) return;
+        rec = new SR();
+        rec.lang = lang;
+        rec.continuous = true;
+        rec.interimResults = true;
+        rec.maxAlternatives = 1;
+        ignoreEnd = false;
+        interim = '';
+        interimSince = 0;
+        lastInterimLen = 0;
+        sessionStartedAt = Date.now();
+        rec.onstart = function () {
+          listening = true;
+          lastErr = '';
+          setSt('正在听（' + lang + '）· 麦克风已占用');
+          postStatus({ phase: 'rec-start' });
+        };
+        rec.onresult = function (ev) {
+          if (!wantListen) return;
+          let inter = '', fin = '';
+          for (let i = ev.resultIndex; i < ev.results.length; i++) {
+            const t = ev.results[i][0].transcript;
+            if (ev.results[i].isFinal) fin += t; else inter += t;
+          }
+          if (inter) {
+            // [v185] interim 时间戳：供固化计时器判断停留
+            if (inter !== interim) { interimSince = Date.now(); lastInterimLen = inter.length; }
+            interim = inter; live.textContent = interim; postInterim(inter);
+          }
+          if (fin) {
+            const text = fin.trim();
+            interim = '';
+            live.textContent = text;
+            postInterim('');            // [v176] 定稿 → 先清掉临时段，再由 final 固化
+            if (text) postFinal(text);
+          }
+        };
+        rec.onerror = function (ev) {
+          // [v185] 分类处理：可恢复错误自动重启，硬错误才停
+          lastErr = 'sr:' + ev.error;
+          listening = false;
+          const kind = ev.error || '';
+          if (kind === 'not-allowed' || kind === 'service-not-allowed') {
+            wantListen = false;
+            setSt('麦克风权限被拒绝：' + kind, true);
+            postStatus({ phase: 'rec-error' });
+            return;
+          }
+          recRestartDelay = (kind === 'network' || kind === 'audio-capture') ? 1500 : 120;
+          setSt('识别错误(' + kind + ')，' + (recRestartDelay > 500 ? '1.5s' : '立即') + '重试');
+          postStatus({ phase: 'rec-error' });
+        };
+        rec.onend = function () {
+          listening = false;
+          rec = null;
+          // [v185] 停止识别 → 残留 interim 先固化为 final（引擎不给 final 我们自己给），再清临时段
+          if (interim && interim.trim()) { const t = interim.trim(); interim = ''; live.textContent = ''; postInterim(''); postFinal(t); }
+          else { interim = ''; postInterim(''); }
+          postStatus({ phase: 'rec-end' });
+          if (ignoreEnd) { ignoreEnd = false; return; }
+          setTimeout(function () { if (wantListen) startRec(); }, recRestartDelay || 180);
+        };
+        try { rec.start(); } catch (e) {
+          rec = null;
+          lastErr = 'start:' + (e && e.message);
+          setSt('启动失败: ' + lastErr, true);
+          postStatus({ phase: 'rec-throw' });
+        }
+      }
+
+      async function tick() {
+        const c = await fetchControl();
+        if (!c || !c.ok) {
+          wantListen = false;
+          setSt('等待软件控制…');
+          stopRec();
+          return;
+        }
+        if (c.lang) lang = c.lang;
+        wantListen = !!(c.enabled && !c.muted);
+        if (wantListen) {
+          // [v185] A) interim 固化：停留 1.6s 无更新 → 主动按 final 发出（引擎长会话不出 isFinal 的兜底）
+          if (listening && interim && interim.trim() && interimSince && Date.now() - interimSince > 1600) {
+            const t = interim.trim();
+            interim = ''; interimSince = 0;
+            live.textContent = t;
+            postInterim('');
+            postFinal(t);
+          }
+          // [v185] C) 会话轮换：连续听 55s 主动重启引擎，规避长会话不再吐 final 的已知问题
+          if (listening && sessionStartedAt && Date.now() - sessionStartedAt > 55000) {
+            sessionStartedAt = Date.now();
+            if (interim && interim.trim()) { const t = interim.trim(); interim = ''; postInterim(''); postFinal(t); }
+            try { if (rec) { ignoreEnd = false; rec.stop(); } } catch (_) {}
+          }
+          if (!listening) await startRec();
+        } else {
+          stopRec();
+          postInterim('');          // [v176] 静音/待命 → 临时段不留在输入框
+          setSt(c.enabled ? '已静音（不采音）' : '识别待命');
+        }
+      }
+
+      if (!SR) setSt('不支持 Web Speech', true);
+      // 启动即申请麦克风，保证系统录音指示灯
+      ensureMic().then(function () { tick(); });
+      // [v176c] tick + 心跳统一放进 Web Worker 驱动。
+      //   实锤（2026-09-20 21:18）：识别页是 --window-position=-32000 的隐藏窗口，Chromium 对
+      //   「隐藏超过 5 分钟」的页面做 intensive throttling，主线程定时器被压到 ~1 次/分钟：
+      //     · 心跳停摆 → electron-main isSpeechBridgePageAlive() 8 秒阈值判死（进程还活着 169MB）
+      //       → 下次点麦克风又多开一个识别页，v176 要根治的多开 bug 原样复发；
+      //     · tick 停摆 → 点麦克风后 /control 要等最多 60 秒才被页面看到 =「点了没反应」。
+      //   Dedicated Worker 的定时器不受该节流影响：worker 打点，主线程只执行 tick / 发 fetch。
+      try {
+        const hbCode = 'setInterval(function(){postMessage(0)}, 400);';
+        const hbUrl = URL.createObjectURL(new Blob([hbCode], { type: 'text/javascript' }));
+        const hb = new Worker(hbUrl);
+        let beat = 0;
+        hb.onmessage = function () {
+          tick();
+          if ((++beat % 5) === 0) postStatus({ phase: 'heartbeat' });   // 400ms × 5 = 2s 心跳
+        };
+      } catch (e) {
+        // 兜底：Worker 建不起来（极老内核）就退回主线程定时器
+        setInterval(tick, 400);
+        setInterval(function () { postStatus({ phase: 'heartbeat' }); }, 2000);
+      }
+    })();
+  </script>
+</body>
+</html>
