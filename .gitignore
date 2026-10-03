@@ -67,3 +67,7 @@ frontend/public/vmd/js_*.recipe.json
 Thumbs.db
 .DS_Store
 .vscode/
+
+# ── 旧构建快照 / old build snapshots
+frontend/dist_*/
+.mimosa/
