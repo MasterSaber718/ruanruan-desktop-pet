@@ -1184,7 +1184,15 @@ router.post('/result', (req, res) => {
 
 
 
-    resultStore.set(id, result);
+    // [2026-10-02 用户拍板·方案1] 成功优先：多窗口广播下，同一指令已有"成功"回执时，
+    //   不被后到的失败回执覆盖（如宠窗口冷却失败盖掉主窗口成功）；失败可被后来的成功改写。
+    const existing = resultStore.get(id);
+
+    if (existing && existing.success && !result.success) {
+      console.log(`[JointControl] 指令 ${id} 已有成功回执，忽略后到的失败回执（多窗口广播竞态）`);
+    } else {
+      resultStore.set(id, result);
+    }
 
 
 
