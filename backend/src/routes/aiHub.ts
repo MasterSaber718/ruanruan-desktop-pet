@@ -30,14 +30,84 @@ const ENV_FILE = process.env.APP_ENV_FILE || path.join(__dirname, '..', '..', '.
 const BRAIN_TIMEOUT_MS = Number(process.env.PET_BRAIN_TIMEOUT_MS || 60000);
 const BRAIN_MAX_TOKENS = Number(process.env.PET_BRAIN_MAX_TOKENS || 1536);
 
-/** 本地兜底目标（运行期现读 env，改了不用重启，便于排障） */
+/** 本地兜底目标（运行期现读 env，改了不用重启，便于排障）
+ *  [2026-10-03] 本地模型内置化：Ollama + qwen3:0.6b（用户定案）。
+ *  推荐参数落地：thinking 关（/no_think + think:false）、temperature 0.7（适中）、
+ *  num_ctx 2048（context 不过大）、stream（内部聚合，接口不变）、GPU 由 Ollama 自动调度。 */
 function localTarget(): BrainTarget {
   return {
     baseUrl: process.env.PET_LOCAL_BASE_URL || 'http://127.0.0.1:11434/v1',
-    model: process.env.PET_LOCAL_MODEL || 'qwen2.5-3b-instruct-q4_k_m',
+    model: process.env.PET_LOCAL_MODEL || 'qwen3:0.6b',
     apiKey: '',
     source: 'local-default',
   };
+}
+
+/** [2026-10-03] Ollama 本地兜底专用通道（qwen3:0.6b）：
+ *  走原生 /api/chat（stream NDJSON 内部聚合成完整文本，调用方接口不变）；
+ *  think:false 关思维链；options 受控（temperature/num_ctx）。GPU 由 Ollama 自动调度。 */
+async function callOllamaChat(target: BrainTarget, task: string, signal?: AbortSignal, systemOverride?: string): Promise<string> {
+  const base = String(target.baseUrl).replace(/\/v1\/?$/, '').replace(/\/+$/, '');
+  const url = base + '/api/chat';
+  const ac = new AbortController();
+  const onAbort = () => { try { ac.abort(); } catch { /* noop */ } };
+  if (signal) {
+    if (signal.aborted) ac.abort();
+    else signal.addEventListener('abort', onAbort, { once: true });
+  }
+  let timedOut = false;
+  const timer = setTimeout(() => { timedOut = true; try { ac.abort(); } catch { /* noop */ } }, BRAIN_TIMEOUT_MS);
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: target.model,
+        messages: [
+          { role: 'system', content: (systemOverride || MOTION_PROTOCOL) + '\n/no_think' },
+          { role: 'user', content: task },
+        ],
+        stream: true,
+        think: false,
+        options: { temperature: 0.7, num_ctx: 2048, num_predict: BRAIN_MAX_TOKENS },
+      }),
+      signal: ac.signal,
+    });
+    if (!resp.ok || !resp.body) {
+      const body = await resp.text().catch(() => '');
+      const err: any = new Error(`${target.source} HTTP ${resp.status}${body ? ' | ' + body.slice(0, 200) : ''}`);
+      err.status = resp.status;
+      throw err;
+    }
+    const reader = resp.body.getReader();
+    const dec = new TextDecoder();
+    let buf = '';
+    let out = '';
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let idx: number;
+      while ((idx = buf.indexOf('\n')) >= 0) {
+        const line = buf.slice(0, idx).trim();
+        buf = buf.slice(idx + 1);
+        if (!line) continue;
+        try {
+          const j = JSON.parse(line);
+          if (j && j.message && typeof j.message.content === 'string') out += j.message.content;
+        } catch { /* 半行/噪声跳过 */ }
+      }
+    }
+    const text = out.trim();
+    if (!text) throw new Error(`${target.source} 返回空正文（model=${target.model}）`);
+    return text;
+  } catch (e: any) {
+    if (timedOut) throw new Error(`大脑 API 超时 ${BRAIN_TIMEOUT_MS}ms（${target.source} / ${target.model}）`);
+    throw e;
+  } finally {
+    clearTimeout(timer);
+    if (signal) signal.removeEventListener('abort', onAbort);
+  }
 }
 
 // 旧链路（仅在 PET_BRAIN_MODE=dsh 时使用）
@@ -245,7 +315,7 @@ export async function runBrain(task: string, signal?: AbortSignal, systemOverrid
     if (primary.source !== 'local-default') {
       const local: BrainTarget = localTarget();
       try {
-        const text = await callBrainAPI(local, task, sig, systemOverride); // [2026-10-02 终审] 回退透传 systemOverride，防任务型消息按全量协议生成大动作
+        const text = await callOllamaChat(local, task, sig, systemOverride); // [2026-10-03] Ollama 通道 + systemOverride 透传
         return { text, route: 'brain-api:local-fallback', target: local };
       } catch (e2: any) {
         const err: any = new Error(`${e?.message || e} ｜ 本地兜底也失败：${e2?.message || e2}`);
@@ -263,6 +333,10 @@ function legacyDshBrain(task: string, signal?: AbortSignal): Promise<{ text: str
   return new Promise((resolve, reject) => {
     if (!task || !task.trim()) {
       reject(new Error('任务为空'));
+      return;
+    }
+    if (task.startsWith('-')) { // [2026-10-02 安全加固] 防参数被当作 CLI 选项（选项注入）
+      reject(new Error('任务文本不能以 "-" 开头'));
       return;
     }
     const env = { ...process.env, DSH_HOME } as Record<string, string>;
@@ -305,7 +379,7 @@ function legacyDshBrain(task: string, signal?: AbortSignal): Promise<{ text: str
       // 本地千问直连兜底
       try {
         const local: BrainTarget = localTarget();
-        const fallback = await callBrainAPI(local, task, signal);
+        const fallback = await callOllamaChat(local, task, signal); // [2026-10-03] Ollama 通道
         resolve({ text: fallback, route: 'brain-api:local-fallback', target: local });
         return;
       } catch (fbErr: any) {
@@ -365,8 +439,10 @@ function dispatchCerebellum(text: string): Array<{ actionId: string }> {
 
 async function saveHistory(sessionId: string, role: string, content: string): Promise<void> {
   try {
-    const port = process.env.PORT || 27865; // [2026-10-02 终审] 不再硬编码端口
-    await fetch(`http://127.0.0.1:${port}/api/v1/ai/history`, {
+    // [2026-10-02 安全加固] 端口必须为 1-65535 的纯数字，杜绝 URL 拼进非法值
+    const port = Number(process.env.PORT);
+    const safePort = (Number.isInteger(port) && port >= 1 && port <= 65535) ? port : 27865;
+    await fetch('http://127.0.0.1:' + safePort + '/api/v1/ai/history', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId, role, content }),

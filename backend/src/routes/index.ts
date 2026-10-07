@@ -5,7 +5,7 @@ import aiRouter from './ai';
 import aiProxyRouter from './aiProxy';
 import networkRouter from './network';
 import systemRouter from './system';
-import updateRouter from './update';
+// [2026-10-02] /update 路由已移除：MongoDB 更新体系从未启用（桌面端走 KKS 替换式更新）
 import modelRouter from './model';
 import optimizationRouter from './optimization';
 import securityRouter from './security';
@@ -43,8 +43,7 @@ router.use('/network', networkRouter);
 // 系统信息路由：时间/时区/地区、CPU/内存/磁盘使用率、开机时间、屏幕信息、IP归属地
 router.use('/system', systemRouter);
 
-// 更新路由
-router.use('/update', updateRouter);
+// [2026-10-02] /update 路由已移除（MongoDB 更新体系从未启用）
 
 // 模型路由
 router.use('/model', modelRouter);

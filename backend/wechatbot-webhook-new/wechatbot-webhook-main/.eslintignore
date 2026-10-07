@@ -1,6 +1,0 @@
-node_modules
-packages/cli/node_modules
-root
-docs
-*.md
-packages/cli/lib/**/*

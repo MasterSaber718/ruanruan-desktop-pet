@@ -489,7 +489,8 @@ function ensureDefaultPetModel() {
     const pmx = entries.find(f => f.isFile() && f.name.toLowerCase().endsWith('.pmx'));
     if (!pmx) { log('[壁纸] 默认目录无 .pmx 文件'); return null; }
     cleanPetTmpDir();
-    const modelFileName = pmx.name;
+    // [2026-10-02 安全加固] basename 消毒：目录名来自本地扫描，仍防路径穿越写入 pet-tmp
+    const modelFileName = path.basename(pmx.name);
     fs.writeFileSync(path.join(PET_TMP_DIR, modelFileName), fs.readFileSync(path.join(dirUsed, modelFileName)));
     const textureMetas = [];
     let texIdx = 0;
@@ -768,7 +769,9 @@ foreach ($a in $apps) {
 Write-Output 'OK'
 `;
     const encoded = Buffer.from(ps, 'utf16le').toString('base64');
-    exec('powershell.exe -NoProfile -NonInteractive -EncodedCommand ' + encoded,
+    // [2026-10-02 安全加固] 参数数组化传递（execFile），不再拼接命令行字符串
+    const { execFile: execFileMic } = require('child_process');
+    execFileMic('powershell.exe', ['-NoProfile', '-NonInteractive', '-EncodedCommand', encoded],
       { windowsHide: true, timeout: 10000 },
       (err, out) => {
         if (err) log('[SpeechBridge] mic consent fail: ' + err.message);
@@ -805,6 +808,12 @@ function startSpeechBridgeEdge(lang) {
   }
   speechBridgeSpawnPending = true;
   const url = `http://127.0.0.1:${UI_PORT}/speech-bridge.html?lang=${encodeURIComponent(speechBridgeControl.lang || 'zh-CN')}`;
+  // [2026-10-02 安全加固] url/speechProfile 拼入启动参数前的白名单守卫（只允许本机 UI 端口 + 固定 profile 路径）
+  if (!/^http:\/\/127\.0\.0\.1:\d+\/speech-bridge\.html\?lang=[A-Za-z0-9\-_%]+$/.test(url)) {
+    speechBridgeSpawnPending = false;
+    log('[SpeechBridge] url 守卫未过，取消拉起: ' + url);
+    return false;
+  }
   try {
     const { spawn } = require('child_process');
     // [v108] 默认 profile 保留麦克风授权；[v119] fake-ui 自动应答首次权限弹窗（仍是真麦克风）

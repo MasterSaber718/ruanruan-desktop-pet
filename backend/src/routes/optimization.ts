@@ -1,10 +1,20 @@
 import express from 'express';
-import { execSync } from 'child_process';
+import { execSync, execFile } from 'child_process';
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
 
 const router = express.Router();
+
+// [2026-10-02 安全加固] 进程名白名单校验：仅允许字母/数字/点/横杠/空格/常见 CJK，
+//   禁止一切 shell 元字符——所有拼入命令串的进程名必须先过这道闸（防命令注入）。
+function safeProcessName(name: unknown): string | null {
+  const s = String(name ?? '').trim();
+  if (!s || s.length > 120) return null;
+  if (/[&|;<>"'`$(){}[\]!%\n\r\t*?~^\\/]/.test(s)) return null;
+  if (!/^[A-Za-z0-9_.\- \u4e00-\u9fff\u3040-\u30ff]+$/.test(s)) return null;
+  return s;
+}
 
 // 获取系统资源使用情况
 router.get('/system-resources', (req, res) => {
@@ -56,15 +66,18 @@ router.post('/optimize', (req, res) => {
     if (targetProcesses.length > 0) {
       targetProcesses.forEach((processName: string) => {
         try {
+          const safeName = safeProcessName(processName);
+          if (!safeName) { optimizationResults.push(`跳过非法进程名（安全校验未过）`); return; }
           // 这里可以根据不同操作系统实现进程优先级调整
           // Windows 示例
           if (os.platform() === 'win32') {
-            execSync(`wmic process where name="${processName}" call setpriority ${getWindowsPriority(priority)}`);
-            optimizationResults.push(`已调整 ${processName} 优先级为 ${priority}`);
+            // [2026-10-02 安全加固] execFile 参数数组，命令不经 shell、无字符串插值
+            execFile('wmic', ['process', 'where', 'name="' + safeName + '"', 'call', 'setpriority', String(getWindowsPriority(priority))], {}, () => {});
+            optimizationResults.push(`已调整 ${safeName} 优先级为 ${priority}`);
           } else {
             // Linux/macOS 示例
-            execSync(`renice -n ${getUnixPriority(priority)} -p $(pgrep ${processName})`);
-            optimizationResults.push(`已调整 ${processName} 优先级为 ${priority}`);
+            execFile('renice', ['-n', String(getUnixPriority(priority)), '-p', safeName], {}, () => {});
+            optimizationResults.push(`已调整 ${safeName} 优先级为 ${priority}`);
           }
         } catch (error) {
           optimizationResults.push(`调整 ${processName} 优先级失败: ${(error as any).message}`);
@@ -125,7 +138,7 @@ router.post('/optimize', (req, res) => {
     //    将后端进程设为高优先级，避免被其他程序抢占CPU资源
     if (os.platform() === 'win32') {
       try {
-        execSync(`wmic process where processid=${process.pid} call setpriority 128`, { windowsHide: true });
+        execFile('wmic', ['process', 'where', `processid=${process.pid}`, 'call', 'setpriority', '128'], { windowsHide: true }, () => {});
         optimizationResults.push('已提升软件进程优先级（高）');
       } catch { /* 忽略 */ }
     }
@@ -175,44 +188,49 @@ router.post('/optimize', (req, res) => {
 router.post('/process-management', (req, res) => {
   try {
     const { action, processName } = req.body;
-    
+
     if (!action || !processName) {
       return res.status(400).json({ message: '请提供操作类型和进程名称' });
     }
+    const safeName = safeProcessName(processName);
+    if (!safeName) {
+      return res.status(400).json({ message: '进程名含非法字符（安全校验未过）' });
+    }
     
     let result = '';
-    
+    // [2026-10-02 安全加固] 全部 execFile 参数数组化：不经 shell、无命令串插值
+    const run = (file: string, args: string[]): string => {
+      try { return execFile(file, args, { encoding: 'utf8' as any, windowsHide: true }) as unknown as string; }
+      catch (e: any) { return String(e?.stdout || e?.message || ''); }
+    };
+
     switch (action) {
       case 'stop':
         if (os.platform() === 'win32') {
-          result = execSync(`taskkill /F /IM ${processName}`, { encoding: 'utf8' });
+          result = run('taskkill', ['/F', '/IM', safeName]);
         } else {
-          result = execSync(`pkill -f ${processName}`, { encoding: 'utf8' });
+          result = run('pkill', ['-f', safeName]);
         }
         break;
       case 'restart':
         if (os.platform() === 'win32') {
-          execSync(`taskkill /F /IM ${processName}`, { encoding: 'utf8' });
-          // 这里可以添加重启进程的逻辑
-          result = `已停止 ${processName}`;
+          run('taskkill', ['/F', '/IM', safeName]);
+          result = `已停止 ${safeName}`;
         } else {
-          execSync(`pkill -f ${processName}`, { encoding: 'utf8' });
-          // 这里可以添加重启进程的逻辑
-          result = `已停止 ${processName}`;
+          run('pkill', ['-f', safeName]);
+          result = `已停止 ${safeName}`;
         }
         break;
       case 'suspend':
-        // 暂停进程（Windows 特有）
         if (os.platform() === 'win32') {
-          result = execSync(`powershell -Command "Get-Process ${processName} | Suspend-Process"`, { encoding: 'utf8' });
+          result = run('powershell', ['-NoProfile', '-NonInteractive', '-Command', `Get-Process -Name '${safeName}' | Suspend-Process`]);
         } else {
           return res.status(400).json({ message: '暂停进程功能仅支持 Windows' });
         }
         break;
       case 'resume':
-        // 恢复进程（Windows 特有）
         if (os.platform() === 'win32') {
-          result = execSync(`powershell -Command "Get-Process ${processName} | Resume-Process"`, { encoding: 'utf8' });
+          result = run('powershell', ['-NoProfile', '-NonInteractive', '-Command', `Get-Process -Name '${safeName}' | Resume-Process`]);
         } else {
           return res.status(400).json({ message: '恢复进程功能仅支持 Windows' });
         }
