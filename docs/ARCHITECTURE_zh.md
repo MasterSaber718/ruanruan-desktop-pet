@@ -15,7 +15,7 @@ flowchart LR
   M --> B[后端 Express :27865<br/>/ai/hub · /companion · /joint-control]
   B --> H[小脑 motion-hub :9877<br/>原语/校验/softGate/配方]
   B --> D[大脑 DeepSeek Harness :5190<br/>dsh-bridge + providers.json 权威]
-  D --> C[云端 LLM / 本地千问 11434 可选]
+  D --> C[云端 LLM / 本地兜底 11434 qwen3-0.6B]
   H --> B
 ```
 
@@ -30,7 +30,7 @@ flowchart LR
 | 9880 | Godot 渲染端 | 可选第二渲染后端（TCP 指令；SetParent 嵌入主窗口预览区） |
 | 5181 | gui-agent | 一句话桌面自动化（pet-mcp `gui_task` 调用） |
 | 5180 | browser-search | 本地无头检索（Playwright） |
-| 11434 | 本地千问（外置） | 可选本地模型；**不随软件启动**，桌面 `qwen2.5-3b` 手动开 |
+| 11434 | 本地兜底模型（llama.cpp） | 内置 qwen3-0.6B（`scripts/start-local-model.bat`，权重 ModelScope 下载）；thinking 关 / temp 0.7 / ctx 2048 / CPU 可跑 |
 
 ## 3. 关键链路
 

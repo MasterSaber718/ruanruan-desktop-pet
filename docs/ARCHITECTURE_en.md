@@ -15,7 +15,7 @@ flowchart LR
   M --> B[Backend Express :27865<br/>/ai/hub · /companion · /joint-control]
   B --> H[Cerebellum motion-hub :9877<br/>primitives / validation / softGate / recipes]
   B --> D[Brain DeepSeek Harness :5190<br/>dsh-bridge + providers.json authority]
-  D --> C[Cloud LLM / local Qwen 11434 optional]
+  D --> C[Cloud LLM / local fallback 11434 qwen3-0.6B]
   H --> B
 ```
 
@@ -30,7 +30,7 @@ flowchart LR
 | 9880 | Godot renderer | Optional second render backend (TCP commands; SetParent-embedded into the preview area) |
 | 5181 | gui-agent | One-sentence desktop automation (used by pet-mcp `gui_task`) |
 | 5180 | browser-search | Local headless search (Playwright) |
-| 11434 | Local Qwen (external) | Optional local model; **not auto-started** — launched manually from Desktop `qwen2.5-3b` |
+| 11434 | Local fallback model (llama.cpp) | Built-in qwen3-0.6B (`scripts/start-local-model.bat`; weights via ModelScope); thinking off / temp 0.7 / ctx 2048 / CPU-ready |
 
 ## 3. Key flows
 

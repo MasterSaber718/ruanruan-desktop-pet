@@ -257,6 +257,12 @@ async function callBrainAPI(target: BrainTarget, task: string, signal?: AbortSig
   const timer = setTimeout(() => { timedOut = true; try { ac.abort(); } catch { /* noop */ } }, BRAIN_TIMEOUT_MS);
 
   try {
+    // [2026-10-03] 本地兜底（llama.cpp）专用参数：qwen3 关思维链 + 适中温度
+    const extra: Record<string, unknown> = {};
+    if (target.source === 'local-default') {
+      extra.temperature = 0.7;
+      extra.chat_template_kwargs = { enable_thinking: false };
+    }
     const resp = await fetch(url, {
       method: 'POST',
       headers,
@@ -269,6 +275,7 @@ async function callBrainAPI(target: BrainTarget, task: string, signal?: AbortSig
         max_tokens: BRAIN_MAX_TOKENS,
         temperature: 0.8,
         stream: false,
+        ...extra,
       }),
       signal: ac.signal,
     });
@@ -315,7 +322,9 @@ export async function runBrain(task: string, signal?: AbortSignal, systemOverrid
     if (primary.source !== 'local-default') {
       const local: BrainTarget = localTarget();
       try {
-        const text = await callOllamaChat(local, task, sig, systemOverride); // [2026-10-03] Ollama 通道 + systemOverride 透传
+        const text = await ((String(process.env.PET_LOCAL_RUNTIME || 'llama-cpp').toLowerCase() === 'ollama')
+          ? callOllamaChat(local, task, sig, systemOverride)
+          : callBrainAPI(local, task, sig, systemOverride)); // [2026-10-03] 本地运行时路由（默认 llama.cpp）
         return { text, route: 'brain-api:local-fallback', target: local };
       } catch (e2: any) {
         const err: any = new Error(`${e?.message || e} ｜ 本地兜底也失败：${e2?.message || e2}`);
@@ -379,7 +388,10 @@ function legacyDshBrain(task: string, signal?: AbortSignal): Promise<{ text: str
       // 本地千问直连兜底
       try {
         const local: BrainTarget = localTarget();
-        const fallback = await callOllamaChat(local, task, signal); // [2026-10-03] Ollama 通道
+        // [2026-10-03] 本地运行时路由：ollama → 原生通道；默认 llama.cpp → OpenAI 兼容（带 qwen3 参数）
+        const fallback = String(process.env.PET_LOCAL_RUNTIME || 'llama-cpp').toLowerCase() === 'ollama'
+          ? await callOllamaChat(local, task, sig)
+          : await callBrainAPI(local, task, sig);
         resolve({ text: fallback, route: 'brain-api:local-fallback', target: local });
         return;
       } catch (fbErr: any) {

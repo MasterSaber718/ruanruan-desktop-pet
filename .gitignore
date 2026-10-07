@@ -19,6 +19,11 @@ frontend/public/mmd/*.tga
 **/*.sph
 **/*.spa
 
+# ── 本地模型权重（大文件不入库，ModelScope 下载） / local model weights
+**/*.gguf
+local-models/
+backend/local-runtime/
+
 # ── 运行时数据 / runtime data
 .electron-userdata/
 pet-tmp/

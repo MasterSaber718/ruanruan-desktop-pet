@@ -42,6 +42,7 @@
 - 后端构建：`cd backend && npm install && npm run build`（tsc，产物 `backend/dist`）
 - 运行版部署约定：构建产物 + `electron-main.js`/`preload.js` 同步到 KKS 安装目录 `resources/app/`（热更新式，重启即新版本）。
 - 运行时端口：`5175` UI 静态 · `27865` 后端 · `9877` motion-hub · `5190` DSH · `9880` Godot（可选）· `5181` gui-agent · `5180` browser-search。
+- **本地兜底模型**：`scripts/start-local-model.bat` 一键启动（llama.cpp + Qwen3-0.6B Q8_0，`11434` 端口 OpenAI 兼容；thinking 关闭 / temp 0.7 / ctx 2048；CPU 即可运行）。模型权重不入库，从 ModelScope `Qwen/Qwen3-0.6B-GGUF` 下载放入 `local-models/`。
 
 ## 标注与致谢（DeepSeek Harness 等）
 
